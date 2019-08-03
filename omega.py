@@ -2,6 +2,7 @@ import pygame
 import random
 import time
 from background import Background
+from boss import Boss
 from enemy import Enemy
 from player import Player
 from bullet import Bullet
@@ -167,6 +168,10 @@ class Game(object):
         player = Player()
         player.rect.y = 330
 
+        boss_list = pygame.sprite.Group()
+        boss = Boss()
+        boss_list.add(boss)
+
         # create hud
         hud_items = pygame.sprite.Group()
         hud_score = Hud(570, 350, 120, 40, 'SCORE')
@@ -241,6 +246,7 @@ class Game(object):
 
             # call the update method on all the sprites
             player.update()
+            boss_list.update(player.rect.center)
             all_sprites_list.update()
             asteroid_list.update()
             hud_items.update()
@@ -266,6 +272,16 @@ class Game(object):
 
                         game_over = True
 
+            player_boss_hit_list = pygame.sprite.spritecollide(
+                player, boss_list, False, pygame.sprite.collide_mask)
+
+            if player_boss_hit_list:
+                pygame.mixer.music.fadeout(1000)
+                message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
+
+                game_over = True
+
+
             # --- calculate mechanics for each bullet
             for bullet in bullet_list:
 
@@ -277,6 +293,16 @@ class Game(object):
                 asteroid_hit_list = pygame.sprite.spritecollide(
                     bullet, asteroid_list, False)
 
+                boss_hit_list = pygame.sprite.spritecollide(
+                    bullet, boss_list, False)
+
+                for boss in boss_hit_list:
+                    boss.hp -= 15
+                    bullet_list.remove(bullet)
+                    all_sprites_list.remove(bullet)
+
+                    if boss.hp <= 0:
+                        boss_list.remove(boss)
 
                 for asteroid in asteroid_hit_list:
                     asteroid.hp -= 3
@@ -320,7 +346,6 @@ class Game(object):
                     message_display('YOU WIN!!! total score: {}'
                         .format(str(total_score)), WHITE, self.screen, (self.screen_width, self.screen_height))
                 game_over = True
-                self.start_loop()
 
             # clear the screen
             self.screen.fill(WHITE)
@@ -331,6 +356,7 @@ class Game(object):
             hud_items.draw(self.screen)
             asteroid_list.draw(self.screen)
             all_sprites_list.draw(self.screen)
+            boss_list.draw(self.screen)
             player.draw(self.screen)
 
             # update the screen
