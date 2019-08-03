@@ -3,6 +3,7 @@ import random
 import time
 from background import Background
 from enemy import Enemy
+from boss import Boss
 from player import Player
 from bullet import Bullet
 from hud import Hud
@@ -69,8 +70,8 @@ class Game(object):
     def __init__(self):
         self.screen = self.pygame_setup()
         self.clock = pygame.time.Clock()
-        # global obj to track high scores
         self.scores = Score()
+        self.game_is_running = False
         
 
     def pygame_setup(self):
@@ -92,19 +93,19 @@ class Game(object):
 
     def start_loop(self):
         """Loop for start screen"""
-        selected = False
         background = Background(START_BG, [0, 0])
         top_score = Hud(10, 350, 200, 40, "TOP SCORE")
 
-        def launch_game():
-            nonlocal selected
-            selected = True
-            self.game_loop()
 
-        while not selected:
+        def launch_game():
+            self.game_is_running = True
+
+
+        while not self.game_is_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    selected = True
+                    pygame.quit()
+                    quit()
 
             top_score.prop = self.scores.top_score
             self.clock.tick(20)
@@ -117,8 +118,12 @@ class Game(object):
             self.screen.blit(text_surf, text_rect)
 
             top_score.update(dest=self.screen)
+
             button('PLAY', ((self.screen_width/2) - 50), 240, 100, 40,
                   ((37,31,71), (108,100,153), (210,208,224)), self.screen, launch_game)
+
+            if self.game_is_running == True:
+                self.game_loop()
 
 
     def game_loop(self):
@@ -131,7 +136,7 @@ class Game(object):
         # set desired fps
         fps = 65
 
-        num_of_enemies = 15
+        num_of_enemies = 2
         score = 0
         shots_fired = 0
         ammo = int(num_of_enemies * 10)
@@ -167,6 +172,12 @@ class Game(object):
         player = Player()
         player.rect.y = 330
 
+        boss_list = pygame.sprite.Group()
+        boss = Boss()
+        boss2 = Boss()
+        boss_list.add(boss)
+        boss_list.add(boss2)
+
         # create hud
         hud_items = pygame.sprite.Group()
         hud_score = Hud(570, 350, 120, 40, 'SCORE')
@@ -178,16 +189,16 @@ class Game(object):
 
         # create asteroids
         asteroid_list = Asteroid_group()
-        asteroid = Asteroid((40, 40), 20)
-        asteroid2 = Asteroid((60, 60), 20)
-        asteroid3 = Asteroid((60, 60), 20)
-        asteroid_list.add(asteroid)
-        asteroid_list.add(asteroid2)
-        asteroid_list.add(asteroid3)
+        # asteroid = Asteroid((40, 40), 20)
+        # asteroid2 = Asteroid((60, 60), 20)
+        # asteroid3 = Asteroid((60, 60), 20)
+        # asteroid_list.add(asteroid)
+        # asteroid_list.add(asteroid2)
+        # asteroid_list.add(asteroid3)
 
         # -------- Main Program Loop -----------
-        game_over = False
-        while not game_over:
+        
+        while self.game_is_running:
             multiplier = int(streak/2) or 1
             total_score = int(score * 100) or 0
             hud_ammo.prop = ammo
@@ -203,14 +214,16 @@ class Game(object):
 
                 if event.type == pygame.QUIT:
                     pygame.mixer.music.stop()
-                    game_over = True
+                    self.game_is_running = False
                     pygame.quit()
                     quit()
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     can_fire = ammo > 0
+                    left_click = event.button == 1
+                    right_click = event.button == 3
 
-                    if can_fire and event.button == 1:
+                    if can_fire and left_click:
                         bullet = Bullet(player_pos)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
@@ -218,7 +231,7 @@ class Game(object):
                         shots_fired += 1
                         ammo -= 1
 
-                    elif can_fire and event.button == 3:
+                    elif can_fire and right_click:
                         bullet = Wobble_shot(player_pos)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
@@ -234,13 +247,14 @@ class Game(object):
                         pygame.mixer.music.fadeout(1000)
                         message_display('YOU LOOSE OUT OF AMMO!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                        game_over = True
+                        self.game_is_running = False
 
 
             # --- Game logic
 
             # call the update method on all the sprites
             player.update()
+            boss_list.update(player.rect.center)
             all_sprites_list.update()
             asteroid_list.update()
             hud_items.update()
@@ -253,7 +267,7 @@ class Game(object):
                 pygame.mixer.music.fadeout(1000)
                 message_display('YOU LOOSE HIT BY ASTEROID!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                game_over = True
+                self.game_is_running = False
 
             player_enemy_hit_list = pygame.sprite.spritecollide(
                 player, enemy_list, False, pygame.sprite.collide_mask)
@@ -264,7 +278,7 @@ class Game(object):
                         pygame.mixer.music.fadeout(1000)
                         message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                        game_over = True
+                        self.game_is_running = False
 
             # --- calculate mechanics for each bullet
             for bullet in bullet_list:
@@ -282,8 +296,9 @@ class Game(object):
                     asteroid.hp -= 3
                     if asteroid.hp <= 0:
                         score += 20
-                    bullet_list.remove(bullet)
-                    all_sprites_list.remove(bullet)
+                    if not isinstance(bullet, Wobble_shot):
+                        bullet_list.remove(bullet)
+                        all_sprites_list.remove(bullet)
 
                 # for each enemy hit, remove the bullet and add to the score
                 for enemy in enemy_hit_list:
@@ -319,8 +334,7 @@ class Game(object):
                 else:
                     message_display('YOU WIN!!! total score: {}'
                         .format(str(total_score)), WHITE, self.screen, (self.screen_width, self.screen_height))
-                game_over = True
-                self.start_loop()
+                self.game_is_running = False
 
             # clear the screen
             self.screen.fill(WHITE)
@@ -331,6 +345,7 @@ class Game(object):
             hud_items.draw(self.screen)
             asteroid_list.draw(self.screen)
             all_sprites_list.draw(self.screen)
+            boss_list.draw(self.screen)
             player.draw(self.screen)
 
             # update the screen
@@ -338,11 +353,20 @@ class Game(object):
 
             self.clock.tick(fps)
 
-            if game_over == True:
+            if self.game_is_running == False: 
                 self.start_loop()
 
 
+class Level:
+    """Defines a level of the game"""
 
+    def __init__(self):
+        self.num_of_enemies = 2
+        self.score = 0
+        self.shots_fired = 0
+        self.ammo = int(num_of_enemies * 10)
+        self.streak = 1
+        self.misses = 0
 
 
 if __name__ == '__main__':

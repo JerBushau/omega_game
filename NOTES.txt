@@ -1,16 +1,17 @@
 TODO:
 -----
 https://github.com/justinmeister/pygame-animation-example/blob/master/animation_example.py -- a lot of good game examples on this GH
+https://github.com/kidscancode/pygame_tutorials -- another great resource
 
 Create Levels and way to progress though levels
 
 Add velocity, acceleration, position to all entities for better control of movement
 
+create an 'entity' base class for all entities to share
+
 Create more robust player class that takes a weapon and ship parameter
 
 get weapon and ship class created weapon should take ammo param and ship should take the weap
-
-create an 'entity' base class for all entities to share
 
 create a base class for enemies allowing for more robust enemies in the future
 
