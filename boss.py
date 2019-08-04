@@ -38,7 +38,7 @@ class Boss(Entity):
         """Enemy movement once marked as hit"""
 
         time_diff = pygame.time.get_ticks() - self.time
-        if (time_diff) < 5000:
+        if (time_diff) < 6000:
             self.acc = self.seek((self.pos.x, HEIGHT + 40))
         else:
             self.alive = False

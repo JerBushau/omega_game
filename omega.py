@@ -177,10 +177,10 @@ class Game(object):
 
         # create asteroids
         asteroid_list = Asteroid_group()
-        # asteroid = Asteroid((40, 40), 20)
+        asteroid = Asteroid((40, 40), 20)
         # asteroid2 = Asteroid((60, 60), 20)
         # asteroid3 = Asteroid((60, 60), 20)
-        # asteroid_list.add(asteroid)
+        asteroid_list.add(asteroid)
         # asteroid_list.add(asteroid2)
         # asteroid_list.add(asteroid3)
 
