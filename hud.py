@@ -1,7 +1,5 @@
 import pygame
 
-
-
 class Hud(pygame.sprite.Sprite):
     """ represents the HUD elements """
 
