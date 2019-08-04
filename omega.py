@@ -130,7 +130,7 @@ class Game(object):
         # set the background
         background = Background(BACKGROUND, [0,0])
         # set desired fps
-        fps = 65
+        fps = 60
 
         num_of_enemies = 15
         score = 0
@@ -187,6 +187,9 @@ class Game(object):
         # -------- Main Program Loop -----------
         game_over = False
         while not game_over:
+            dt = self.clock.tick(fps) / 1000
+            pygame.display.set_caption(str(self.clock.get_fps()))
+
             multiplier = int(streak/2) or 1
             total_score = int(score * 100) or 0
             hud_ammo.prop = ammo
@@ -242,7 +245,7 @@ class Game(object):
             player.update()
             boss_list.update(player.rect.center)
             all_sprites_list.update()
-            enemy_list.update(player.rect.center)
+            enemy_list.update(dt, player.rect.center)
             asteroid_list.update()
             hud_items.update()
 
@@ -357,8 +360,6 @@ class Game(object):
 
             # update the screen
             pygame.display.flip()
-
-            self.clock.tick(fps)
 
             if game_over == True:
                 self.start_loop()

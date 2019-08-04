@@ -4,10 +4,10 @@ from bullet import Bullet
 WOBBLE = pygame.image.load('assets/wobble.png')
 
 
-class Wobble_shot(Bullet, pygame.sprite.Sprite):
+class Wobble_shot(Bullet):
 
     def __init__(self, pos):
-        super(Wobble_shot, self).__init__(pos)
+        super().__init__(pos)
         self.image = WOBBLE.convert_alpha()
         self.wobble = 'right'
         self.speed = 2
@@ -22,7 +22,6 @@ class Wobble_shot(Bullet, pygame.sprite.Sprite):
         if self.rect.y < 250:
             growth = 250 - self.rect.y
             cap = 30
-
             if growth < cap:
                 self.image = pygame.transform.scale(WOBBLE.convert_alpha(), (growth, growth))
 
