@@ -163,8 +163,8 @@ class Game(object):
         player.rect.y = 330
 
         boss_list = pygame.sprite.Group()
-        # boss = Boss()
-        # boss_list.add(boss)
+        boss = Boss()
+        boss_list.add(boss)
 
         # create hud
         hud_items = pygame.sprite.Group()
@@ -243,7 +243,7 @@ class Game(object):
 
             # call the update method on all the sprites
             player.update()
-            boss_list.update(player.rect.center)
+            boss_list.update(dt, player.rect.center)
             all_sprites_list.update()
             enemy_list.update(dt, player.rect.center)
             asteroid_list.update()
@@ -300,7 +300,7 @@ class Game(object):
                     all_sprites_list.remove(bullet)
 
                     if boss.hp <= 0:
-                        boss_list.remove(boss)
+                        boss.explode()
 
                 for asteroid in asteroid_hit_list:
                     asteroid.hp -= 3
@@ -328,13 +328,15 @@ class Game(object):
 
             # checking enemy list is empty ensures that the last explode() has completed
             # before ending game;)
-            if not enemy_list:
+            if not enemy_list and not boss_list:
                 print('winner',shots_fired, score, total_score)
                 pygame.mixer.music.fadeout(1000)
+                perfect = shots_fired <= num_of_enemies and not misses
+
                 if total_score > self.scores.top_score:
                     self.scores.update_ts(total_score)
 
-                if shots_fired <= num_of_enemies and not misses:
+                if perfect:
                     message_display('PERFECT!! YOU WIN!! score: {}'
                         .format(str(total_score)), WHITE, self.screen, (self.screen_width, self.screen_height))
                 elif ammo == 0:
