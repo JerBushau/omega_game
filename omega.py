@@ -153,24 +153,18 @@ class Game(object):
         # create all enemies
         for i in range(num_of_enemies):
             enemy = Enemy()
-
-            # set a random location for the enemy
-            # *maybe* in the future have them all start off screen
-            enemy.rect.x = random.randrange(self.screen_width)
-            enemy.rect.y = random.randrange(240)
-            enemy.starting_y = enemy.rect.y
             # Add the enemy to the appropriate lists of sprites
             enemy_list.add(enemy)
-            all_sprites_list.add(enemy)
 
 
         # create a player and starting location
+        # player should take in starting location
         player = Player()
         player.rect.y = 330
 
         boss_list = pygame.sprite.Group()
-        boss = Boss()
-        boss_list.add(boss)
+        # boss = Boss()
+        # boss_list.add(boss)
 
         # create hud
         hud_items = pygame.sprite.Group()
@@ -183,12 +177,12 @@ class Game(object):
 
         # create asteroids
         asteroid_list = Asteroid_group()
-        asteroid = Asteroid((40, 40), 20)
-        asteroid2 = Asteroid((60, 60), 20)
-        asteroid3 = Asteroid((60, 60), 20)
-        asteroid_list.add(asteroid)
-        asteroid_list.add(asteroid2)
-        asteroid_list.add(asteroid3)
+        # asteroid = Asteroid((40, 40), 20)
+        # asteroid2 = Asteroid((60, 60), 20)
+        # asteroid3 = Asteroid((60, 60), 20)
+        # asteroid_list.add(asteroid)
+        # asteroid_list.add(asteroid2)
+        # asteroid_list.add(asteroid3)
 
         # -------- Main Program Loop -----------
         game_over = False
@@ -248,6 +242,7 @@ class Game(object):
             player.update()
             boss_list.update(player.rect.center)
             all_sprites_list.update()
+            enemy_list.update(player.rect.center)
             asteroid_list.update()
             hud_items.update()
 
@@ -355,6 +350,7 @@ class Game(object):
             # draw all the spites thier z-index is determined by the order here
             hud_items.draw(self.screen)
             asteroid_list.draw(self.screen)
+            enemy_list.draw(self.screen)
             all_sprites_list.draw(self.screen)
             boss_list.draw(self.screen)
             player.draw(self.screen)
@@ -366,9 +362,6 @@ class Game(object):
 
             if game_over == True:
                 self.start_loop()
-
-
-
 
 
 if __name__ == '__main__':
