@@ -17,7 +17,7 @@ class Entity(pygame.sprite.Sprite):
         self.max_force = movement_options[1]
         self.approach_radius = movement_options[2]
         self.pos = vec(starting_pos)
-        self.vel = vec(self.max_speed, 0).rotate(uniform(0, 360))
+        self.vel = vec(0, 0).rotate(uniform(0, 360))
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         
@@ -45,12 +45,12 @@ class Entity(pygame.sprite.Sprite):
         return steer
 
 
-    def update(self):
+    def update(self, delta_time):
         # equations of motion
-        self.vel += self.acc
+        self.vel += self.acc * delta_time
         if self.vel.length() > self.max_speed:
             self.vel.scale_to_length(self.max_speed)
-        self.pos += self.vel
+        self.pos += self.vel * delta_time + 0.5 * self.acc * delta_time**2
         if self.pos.x > WIDTH:
             self.pos.x = 0
         elif self.pos.x < 0:

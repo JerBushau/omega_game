@@ -14,7 +14,7 @@ class Enemy(Entity):
     """ represents the enemy """
 
     def __init__(self):
-        super().__init__(ENEMY, (3, 0.1, 120), vec(random.randint(0, 700), random.randint(50, 200)))
+        super().__init__(ENEMY, (175, 450, 120), vec(random.randint(0, 700), random.randint(50, 200)))
         self.return_pos = vec(random.choice([random.randint(-10, -5), random.randint(701, 720)]), random.randint(50, 200))
         self.mask = pygame.mask.from_surface(self.image)
         self.time = None
@@ -30,7 +30,7 @@ class Enemy(Entity):
         """ mark enemy as hit """
 
         self.hit = True
-        self.max_speed = 1
+        self.max_speed = 135
         self.destruction_sound.play()
         self.time = pygame.time.get_ticks()
         self.image = DESTRO_ENEMY
@@ -54,7 +54,7 @@ class Enemy(Entity):
             self.kill()
 
 
-    def update(self, target):
+    def update(self, dt, target):
         """ update movement and state of enemy """
 
         current_ticks = pygame.time.get_ticks()
@@ -76,4 +76,4 @@ class Enemy(Entity):
         if self.time and self.hit:
             self.death_animation(current_ticks)
 
-        super().update()
+        super().update(dt)
