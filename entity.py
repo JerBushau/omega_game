@@ -9,7 +9,7 @@ HEIGHT = 400
 class Entity(pygame.sprite.Sprite):
     """The base class for any on screen object with movement"""
 
-    def __init__(self, img, movement_options=(2, 0.03, 120), starting_pos=(100, 100)):
+    def __init__(self, img, movement_options=(200, 100, 120), starting_pos=(100, 100)):
         super().__init__()
         self.image = img
         self.rect = self.image.get_rect()
@@ -55,8 +55,8 @@ class Entity(pygame.sprite.Sprite):
             self.pos.x = 0
         elif self.pos.x < 0:
             self.pos.x = WIDTH
-        if self.pos.y > HEIGHT:
-            self.pos.y = HEIGHT
-        elif self.pos.y < -20:
-            self.pos.y = 0
+        if self.pos.y > HEIGHT + 50:
+            self.pos.y = HEIGHT + 50
+        elif self.pos.y < -50:
+            self.pos.y = -50
         self.rect.center = self.pos
