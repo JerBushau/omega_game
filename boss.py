@@ -6,11 +6,6 @@ vec = pygame.math.Vector2
 
 WIDTH = 700
 HEIGHT = 400
-# Boss properties
-BOSS_SIZE = 32
-MAX_SPEED = 2
-MAX_FORCE = 0.03
-APPROACH_RADIUS = 120
 
 ENEMY = pygame.image.load('assets/enemy.png')
 DESTRO_ENEMY = pygame.image.load('assets/destro_enemy.png')
@@ -19,25 +14,35 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self):
-        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (60, 60)))
-        self.hp = 100
+        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (60, 60)), (200, 100, 120))
+        self.hp = 600
         self.attack_timer = Timer()
         self.is_in_attack_mode = False
         self.attack_duration = randint(180, 360)
+        self.time = None
+        self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
+        self.hit = False
 
 
-    def seek_with_approach(self, target):
-        self.desired = (target - self.pos)
-        dist = self.desired.length()
-        self.desired.normalize_ip()
-        if dist < APPROACH_RADIUS:
-            self.desired *= dist / APPROACH_RADIUS * MAX_SPEED
+    def explode(self):
+        """ mark enemy as hit """
+
+        self.hit = True
+        self.max_speed = 75
+        self.destruction_sound.play()
+        self.time = pygame.time.get_ticks()
+        self.image = pygame.transform.scale(DESTRO_ENEMY.convert_alpha(), (60, 60))
+
+
+    def death_animation(self):
+        """Enemy movement once marked as hit"""
+
+        time_diff = pygame.time.get_ticks() - self.time
+        if (time_diff) < 6000:
+            self.acc = self.seek((self.pos.x, HEIGHT + 40))
         else:
-            self.desired *= MAX_SPEED
-        steer = (self.desired - self.vel)
-        if steer.length() > MAX_FORCE:
-            steer.scale_to_length(MAX_FORCE)
-        return steer
+            self.alive = False
+            self.kill()
 
 
     def draw(self, screen):
@@ -45,7 +50,7 @@ class Boss(Entity):
         screen.blit(self.image, self.rect)
 
 
-    def update(self, target):
+    def update(self, dt, target):
 
         self.attack_timer.start_timer()
     
@@ -63,7 +68,9 @@ class Boss(Entity):
         else:
             actual_target = target
 
-
         self.acc = self.seek_with_approach(actual_target)
+
+        if self.time and self.hit:
+            self.death_animation()
         # equations of motion
-        super().update()
+        super().update(dt)

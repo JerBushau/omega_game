@@ -1,19 +1,21 @@
 TODO:
 -----
 https://github.com/justinmeister/pygame-animation-example/blob/master/animation_example.py -- a lot of good game examples on this GH
+https://www.youtube.com/playlist?list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3 -- incredible resource
 
 Create Levels and way to progress though levels
 
-Add velocity, acceleration, position to all entities for better control of movement
+Learn more about vector based movement and kinematic formulas https://www.khanacademy.org/science/physics/one-dimensional-motion/kinematic-formulas/a/what-are-the-kinematic-formulas 
+	to understand more about time based movement. https://www.youtube.com/watch?v=TIiYJaY8ZR0&list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3&index=2
+
+All projectiles and other on screen entities that move should inherit from entity class so that they can benefit from vector based movement
 
 Create more robust player class that takes a weapon and ship parameter
 
 get weapon and ship class created weapon should take ammo param and ship should take the weap
 
-create an 'entity' base class for all entities to share
-
 create a base class for enemies allowing for more robust enemies in the future
 
-create at least one boss and boss fight
+create at least one real boss and boss fight
 
 decide whether or not to go side scroller vs static vs top scroller

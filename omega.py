@@ -130,7 +130,7 @@ class Game(object):
         # set the background
         background = Background(BACKGROUND, [0,0])
         # set desired fps
-        fps = 65
+        fps = 60
 
         num_of_enemies = 15
         score = 0
@@ -153,18 +153,12 @@ class Game(object):
         # create all enemies
         for i in range(num_of_enemies):
             enemy = Enemy()
-
-            # set a random location for the enemy
-            # *maybe* in the future have them all start off screen
-            enemy.rect.x = random.randrange(self.screen_width)
-            enemy.rect.y = random.randrange(240)
-            enemy.starting_y = enemy.rect.y
             # Add the enemy to the appropriate lists of sprites
             enemy_list.add(enemy)
-            all_sprites_list.add(enemy)
 
 
         # create a player and starting location
+        # player should take in starting location
         player = Player()
         player.rect.y = 330
 
@@ -184,15 +178,18 @@ class Game(object):
         # create asteroids
         asteroid_list = Asteroid_group()
         asteroid = Asteroid((40, 40), 20)
-        asteroid2 = Asteroid((60, 60), 20)
-        asteroid3 = Asteroid((60, 60), 20)
+        # asteroid2 = Asteroid((60, 60), 20)
+        # asteroid3 = Asteroid((60, 60), 20)
         asteroid_list.add(asteroid)
-        asteroid_list.add(asteroid2)
-        asteroid_list.add(asteroid3)
+        # asteroid_list.add(asteroid2)
+        # asteroid_list.add(asteroid3)
 
         # -------- Main Program Loop -----------
         game_over = False
         while not game_over:
+            dt = self.clock.tick(fps) / 1000
+            pygame.display.set_caption(str(self.clock.get_fps()))
+
             multiplier = int(streak/2) or 1
             total_score = int(score * 100) or 0
             hud_ammo.prop = ammo
@@ -246,8 +243,9 @@ class Game(object):
 
             # call the update method on all the sprites
             player.update()
-            boss_list.update(player.rect.center)
+            boss_list.update(dt, player.rect.center)
             all_sprites_list.update()
+            enemy_list.update(dt, player.rect.center)
             asteroid_list.update()
             hud_items.update()
 
@@ -302,7 +300,7 @@ class Game(object):
                     all_sprites_list.remove(bullet)
 
                     if boss.hp <= 0:
-                        boss_list.remove(boss)
+                        boss.explode()
 
                 for asteroid in asteroid_hit_list:
                     asteroid.hp -= 3
@@ -330,13 +328,15 @@ class Game(object):
 
             # checking enemy list is empty ensures that the last explode() has completed
             # before ending game;)
-            if not enemy_list:
+            if not enemy_list and not boss_list:
                 print('winner',shots_fired, score, total_score)
                 pygame.mixer.music.fadeout(1000)
+                perfect = shots_fired <= num_of_enemies and not misses
+
                 if total_score > self.scores.top_score:
                     self.scores.update_ts(total_score)
 
-                if shots_fired <= num_of_enemies and not misses:
+                if perfect:
                     message_display('PERFECT!! YOU WIN!! score: {}'
                         .format(str(total_score)), WHITE, self.screen, (self.screen_width, self.screen_height))
                 elif ammo == 0:
@@ -355,6 +355,7 @@ class Game(object):
             # draw all the spites thier z-index is determined by the order here
             hud_items.draw(self.screen)
             asteroid_list.draw(self.screen)
+            enemy_list.draw(self.screen)
             all_sprites_list.draw(self.screen)
             boss_list.draw(self.screen)
             player.draw(self.screen)
@@ -362,13 +363,8 @@ class Game(object):
             # update the screen
             pygame.display.flip()
 
-            self.clock.tick(fps)
-
             if game_over == True:
                 self.start_loop()
-
-
-
 
 
 if __name__ == '__main__':
