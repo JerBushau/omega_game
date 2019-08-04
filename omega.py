@@ -274,10 +274,12 @@ class Game(object):
                 player, boss_list, False, pygame.sprite.collide_mask)
 
             if player_boss_hit_list:
-                pygame.mixer.music.fadeout(1000)
-                message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
+                for boss in player_boss_hit_list:
+                    if not boss.hit:
+                        pygame.mixer.music.fadeout(1000)
+                        message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                game_over = True
+                        game_over = True
 
 
             # --- calculate mechanics for each bullet
