@@ -1,6 +1,6 @@
 import pygame
 from random import randint, uniform
-from entity import Entity
+from components.entity import Entity
 from timer import Timer
 vec = pygame.math.Vector2
 

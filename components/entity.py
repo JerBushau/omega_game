@@ -18,8 +18,8 @@ class Entity(pygame.sprite.Sprite):
         self.approach_radius = movement_options[2]
         self.pos = vec(starting_pos)
         self.vel = vec(0, 0).rotate(uniform(0, 360))
-        self.acc = vec(0, 0)
         self.rect.center = self.pos
+        self.acc = vec(0, 0)
         
 
 

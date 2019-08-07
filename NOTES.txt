@@ -3,7 +3,10 @@ TODO:
 https://github.com/justinmeister/pygame-animation-example/blob/master/animation_example.py -- a lot of good game examples on this GH
 https://www.youtube.com/playlist?list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3 -- incredible resource
 
-Create Levels and way to progress though levels
+Create game state engine to facilitate levels and way to progress though levels -- something like https://gist.github.com/iminurnamez/8d51f5b40032f106a847 or https://github.com/Mekire/pygame-mutiscene-template-with-movie 
+	or pretty simple one at https://archives.seul.org/pygame/users/Jul-2007/msg00268.html
+
+Add controller support
 
 Learn more about vector based movement and kinematic formulas https://www.khanacademy.org/science/physics/one-dimensional-motion/kinematic-formulas/a/what-are-the-kinematic-formulas 
 	to understand more about time based movement. https://www.youtube.com/watch?v=TIiYJaY8ZR0&list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3&index=2

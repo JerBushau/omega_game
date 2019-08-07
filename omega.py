@@ -1,16 +1,15 @@
 import pygame
 import random
 import time
-from background import Background
-from boss import Boss
-from enemy import Enemy
-from player import Player
-from bullet import Bullet
-from hud import Hud
+from components.background import Background
+from components.boss import Boss
+from components.enemy import Enemy
+from components.player import Player
+from components.bullet import Bullet
+from components.hud import Hud
+from components.wobble import Wobble_shot
+from components.asteroid import Asteroid, Asteroid_group
 from score import Score
-from wobble import Wobble_shot
-from asteroid import Asteroid, Asteroid_group
-
 # create a file for constant vars colors bgs etc
 
 BACKGROUND = 'assets/background.png'
@@ -302,6 +301,7 @@ class Game(object):
                     all_sprites_list.remove(bullet)
 
                     if boss.hp <= 0:
+                        score += (150 * multiplier)
                         boss.explode()
 
                 for asteroid in asteroid_hit_list:

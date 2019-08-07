@@ -1,5 +1,5 @@
 import pygame
-from bullet import Bullet
+from components.bullet import Bullet
 
 WOBBLE = pygame.image.load('assets/wobble.png')
 
