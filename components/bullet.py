@@ -18,7 +18,7 @@ class Bullet(pygame.sprite.Sprite):
 
         self.sound.play()
 
-    def update(self):
+    def update(self, dt):
         """ move the bullet """
 
         self.rect.y -= self.speed

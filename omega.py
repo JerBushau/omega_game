@@ -9,6 +9,7 @@ from components.bullet import Bullet
 from components.hud import Hud
 from components.wobble import Wobble_shot
 from components.asteroid import Asteroid, Asteroid_group
+from components.chain_lightning import Chain_Lightning
 from score import Score
 # create a file for constant vars colors bgs etc
 
@@ -162,8 +163,8 @@ class Game(object):
         player.rect.y = 330
 
         boss_list = pygame.sprite.Group()
-        boss = Boss()
-        boss_list.add(boss)
+        # boss = Boss()
+        # boss_list.add(boss)
 
         # create hud
         hud_items = pygame.sprite.Group()
@@ -176,10 +177,10 @@ class Game(object):
 
         # create asteroids
         asteroid_list = Asteroid_group()
-        asteroid = Asteroid((40, 40), 20)
+        # asteroid = Asteroid((40, 40), 20)
         # asteroid2 = Asteroid((60, 60), 20)
         # asteroid3 = Asteroid((60, 60), 20)
-        asteroid_list.add(asteroid)
+        # asteroid_list.add(asteroid)
         # asteroid_list.add(asteroid2)
         # asteroid_list.add(asteroid3)
 
@@ -212,12 +213,14 @@ class Game(object):
                     can_fire = ammo > 0
 
                     if can_fire and event.button == 1:
-                        bullet = Bullet(player_pos)
-                        # add the bullet to lists
-                        all_sprites_list.add(bullet)
-                        bullet_list.add(bullet)
-                        shots_fired += 1
-                        ammo -= 1
+                        for i in range(3):
+                            bullet = Chain_Lightning(player_pos)
+                            # add the bullet to lists
+                            bullet.find_next_target(enemy_list)
+                            all_sprites_list.add(bullet)
+                            bullet_list.add(bullet)
+                            shots_fired += 1
+                            ammo -= 1
 
                     elif can_fire and event.button == 3:
                         bullet = Wobble_shot(player_pos)
@@ -243,7 +246,7 @@ class Game(object):
             # call the update method on all the sprites
             player.update()
             boss_list.update(dt, player.rect.center)
-            all_sprites_list.update()
+            all_sprites_list.update(dt)
             enemy_list.update(dt, player.rect.center)
             asteroid_list.update()
             hud_items.update()
@@ -322,7 +325,7 @@ class Game(object):
                         enemy.explode()
 
                  # remove the bullet if it flies up off the screen
-                if bullet.rect.y < -10:
+                if bullet.rect.y < -50:
                     bullet_list.remove(bullet)
                     all_sprites_list.remove(bullet)
                     streak = 0

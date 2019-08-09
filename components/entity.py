@@ -5,6 +5,7 @@ vec = pygame.math.Vector2
 
 WIDTH = 700
 HEIGHT = 400
+FLEE_DISTANCE = 400
 
 class Entity(pygame.sprite.Sprite):
     """The base class for any on screen object with movement"""
@@ -20,7 +21,19 @@ class Entity(pygame.sprite.Sprite):
         self.vel = vec(0, 0).rotate(uniform(0, 360))
         self.rect.center = self.pos
         self.acc = vec(0, 0)
-        
+
+
+    def flee(self, target):
+        steer = vec(0, 0)
+        dist = self.pos - target
+        if dist.length() < FLEE_DISTANCE:
+            self.desired = (self.pos - target).normalize() * self.max_speed
+        else:
+            self.desired = self.vel.normalize() * self.max_speed
+        steer = (self.desired - self.vel)
+        if steer.length() > self.max_force:
+            steer.scale_to_length(self.max_force)
+        return steer
 
 
     def seek(self, target):
