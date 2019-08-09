@@ -66,7 +66,6 @@ def button(msg, x, y, width, height, colors, surface, action=None):
 
 
 class Game(object):
-    powershot = False
     """Controls entire game"""
     def __init__(self):
         self.screen = self.pygame_setup()
@@ -245,7 +244,7 @@ class Game(object):
 
 
 
-                    elif powershot is True and event.button == 3:
+                    elif powershot == True and event.button == 3:
                         bullet = Wobble_shot(player_pos)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
@@ -285,26 +284,31 @@ class Game(object):
             player_hit_list = pygame.sprite.spritecollide(
                 player, asteroid_list, False, pygame.sprite.collide_mask)
 
-            if player_hit_list:
-                pygame.mixer.music.fadeout(1000)
-                message_display('YOU LOOSE HIT BY ASTEROID!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
+            # if player_hit_list:
+            #     pygame.mixer.music.fadeout(1000)
+            #     message_display('YOU LOOSE HIT BY ASTEROID!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                game_over = True
+            #     game_over = True
 
-            player_enemy_hit_list = pygame.sprite.spritecollide(
-                player, enemy_list, False, pygame.sprite.collide_mask)
+            # player_enemy_hit_list = pygame.sprite.spritecollide(
+            #     player, enemy_list, False, pygame.sprite.collide_mask)
 
-            if player_enemy_hit_list:
-                for enemy in player_enemy_hit_list:
-                    if not enemy.hit:
-                        pygame.mixer.music.fadeout(1000)
-                        message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
+            # if player_enemy_hit_list:
+            #     for enemy in player_enemy_hit_list:
+            #         if not enemy.hit:
+            #             pygame.mixer.music.fadeout(1000)
+            #             message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, self.screen, (self.screen_width, self.screen_height))
 
-                        game_over = True
-
-
+            #             game_over = True
 
 
+
+            power_hit_list = pygame.sprite.spritecollide(player, power_up_list, True)
+
+            for powerup in power_hit_list:
+                powerup.collected()
+                start_ticks = pygame.time.get_ticks()
+                powershot = True
 
 
 
@@ -350,14 +354,6 @@ class Game(object):
                             power_up_list.add(powerup)
 
                             #PowerUp(enemy.rect.center).add(all_sprites_list, power_up_list)
-
-                power_hit_list = pygame.sprite.spritecollide(player, power_up_list, True)
-
-                for powerup in power_hit_list:
-                    powerup.collected()
-                    powershot = True
-
-
 
                  # remove the bullet if it flies up off the screen
                 if bullet.rect.y < -10:
