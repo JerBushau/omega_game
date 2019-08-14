@@ -20,10 +20,9 @@ class Chain_Lightning(Entity):
 		if self.enemy_list == None:
 			self.enemy_list = enemy_list
 		if len(enemy_list) > 0:
-			enemy = enemy_list.sprites()[random.randint(0, len(enemy_list) - 1)]
+			enemy = enemy_list[random.randint(0, len(enemy_list) - 1)]
 			if not enemy.hit and enemy.alive:
 				self.next_target = enemy
-
 
 
 	def update(self, dt):

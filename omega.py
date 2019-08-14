@@ -132,7 +132,7 @@ class Game(object):
         # set desired fps
         fps = 60
 
-        num_of_enemies = 15
+        num_of_enemies = 25
         score = 0
         shots_fired = 0
         ammo = int(num_of_enemies * 10)
@@ -163,8 +163,8 @@ class Game(object):
         player.rect.y = 330
 
         boss_list = pygame.sprite.Group()
-        # boss = Boss()
-        # boss_list.add(boss)
+        boss = Boss()
+        boss_list.add(boss)
 
         # create hud
         hud_items = pygame.sprite.Group()
@@ -213,22 +213,30 @@ class Game(object):
                     can_fire = ammo > 0
 
                     if can_fire and event.button == 1:
-                        for i in range(3):
-                            bullet = Chain_Lightning(player_pos)
-                            # add the bullet to lists
-                            bullet.find_next_target(enemy_list)
-                            all_sprites_list.add(bullet)
-                            bullet_list.add(bullet)
-                            shots_fired += 1
-                            ammo -= 1
-
-                    elif can_fire and event.button == 3:
-                        bullet = Wobble_shot(player_pos)
+                        
+                        bullet = Bullet(player_pos)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
                         bullet_list.add(bullet)
                         shots_fired += 1
                         ammo -= 1
+                        
+
+                    elif can_fire and event.button == 3:
+                        for i in range(3):
+                            bullet = Chain_Lightning(player_pos)
+                            # add the bullet to lists
+                            bullet.find_next_target(enemy_list.sprites() + boss_list.sprites())
+                            all_sprites_list.add(bullet)
+                            bullet_list.add(bullet)
+                            shots_fired += 1
+                            ammo -= 1
+                        # bullet = Wobble_shot(player_pos)
+                        # # add the bullet to lists
+                        # all_sprites_list.add(bullet)
+                        # bullet_list.add(bullet)
+                        # shots_fired += 1
+                        # ammo -= 1
 
                     elif event.button == 2:
                         ammo += 30

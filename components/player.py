@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 330
         self.rect.centerx = self.rect.width / 2
         self.speed = 4
+        
 
     def draw(self, screen):
         """ draw player specifically """
