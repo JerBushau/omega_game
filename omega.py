@@ -11,6 +11,7 @@ from components.wobble import Wobble_shot
 from components.asteroid import Asteroid, Asteroid_group
 from components.chain_lightning import Chain_Lightning
 from score import Score
+from timer import Timer2
 # create a file for constant vars colors bgs etc
 
 BACKGROUND = 'assets/background.png'
@@ -132,13 +133,15 @@ class Game(object):
         # set desired fps
         fps = 60
 
-        num_of_enemies = 25
+        num_of_enemies = 15
         score = 0
         shots_fired = 0
         ammo = int(num_of_enemies * 10)
         streak = 1
         misses = 0
 
+        is_firing = False
+        firing_timer = Timer2(140)
         # uncomment this line to hide the system mouse when game window is in focus
         # pygame.mouse.set_visible(False) 
 
@@ -211,15 +214,15 @@ class Game(object):
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     can_fire = ammo > 0
-
                     if can_fire and event.button == 1:
-                        
-                        bullet = Bullet(player_pos)
+                        is_firing = True
+                        bullet = Bullet(player.rect.center)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
                         bullet_list.add(bullet)
                         shots_fired += 1
                         ammo -= 1
+                        firing_timer.start_repeating()
                         
 
                     elif can_fire and event.button == 3:
@@ -248,6 +251,19 @@ class Game(object):
 
                         game_over = True
 
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        is_firing = False
+                        firing_timer.reset()
+
+            # weapon logic
+            if firing_timer.is_finished():
+                bullet = Bullet(player.rect.center)
+                # add the bullet to lists
+                all_sprites_list.add(bullet)
+                bullet_list.add(bullet)
+                shots_fired += 1
+                ammo -= 1
 
             # --- Game logic
 
