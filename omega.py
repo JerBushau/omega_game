@@ -140,8 +140,6 @@ class Game(object):
         streak = 1
         misses = 0
 
-        is_firing = False
-        firing_timer = Timer2(140)
         # uncomment this line to hide the system mouse when game window is in focus
         # pygame.mouse.set_visible(False) 
 
@@ -215,14 +213,13 @@ class Game(object):
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     can_fire = ammo > 0
                     if can_fire and event.button == 1:
-                        is_firing = True
+                        player.weapon.begin_fire()
                         bullet = Bullet(player.rect.center)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
                         bullet_list.add(bullet)
                         shots_fired += 1
                         ammo -= 1
-                        firing_timer.start_repeating()
                         
 
                     elif can_fire and event.button == 3:
@@ -253,11 +250,10 @@ class Game(object):
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
-                        is_firing = False
-                        firing_timer.reset()
+                        player.weapon.cease_fire
 
             # weapon logic
-            if firing_timer.is_finished():
+            if player.weapon.firing_timer.is_finished() and ammo > 0:
                 bullet = Bullet(player.rect.center)
                 # add the bullet to lists
                 all_sprites_list.add(bullet)

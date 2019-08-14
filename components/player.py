@@ -1,5 +1,5 @@
 import pygame
-
+from components.weapon import Weapon
 PLAYER = pygame.image.load('assets/ship.png')
 
 class Player(pygame.sprite.Sprite):
@@ -15,6 +15,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.y = 330
         self.rect.centerx = self.rect.width / 2
         self.speed = 4
+        self.weapon = Weapon()
         
 
     def draw(self, screen):
