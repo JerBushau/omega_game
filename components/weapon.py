@@ -3,9 +3,10 @@ from timer import Timer2
 
 class Weapon:
     
-    def __init__(self):
+    def __init__(self, ammo_type):
         self.is_firing = False
-        self.firing_timer = Timer2(200)
+        self.firing_timer = Timer2(180)
+        self.ammo_type = ammo_type
 
 
     def begin_fire(self):

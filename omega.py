@@ -214,7 +214,7 @@ class Game(object):
                     can_fire = ammo > 0
                     if can_fire and event.button == 1:
                         player.weapon.begin_fire()
-                        bullet = Bullet(player.rect.center)
+                        bullet = player.weapon.ammo_type(player.rect.center)
                         # add the bullet to lists
                         all_sprites_list.add(bullet)
                         bullet_list.add(bullet)
@@ -250,11 +250,11 @@ class Game(object):
 
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
-                        player.weapon.cease_fire
+                        player.weapon.cease_fire()
 
             # weapon logic
             if player.weapon.firing_timer.is_finished() and ammo > 0:
-                bullet = Bullet(player.rect.center)
+                bullet = player.weapon.ammo_type(player.rect.center)
                 # add the bullet to lists
                 all_sprites_list.add(bullet)
                 bullet_list.add(bullet)
