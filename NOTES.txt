@@ -6,8 +6,13 @@ https://courses.lumenlearning.com/boundless-physics/chapter/vectors/ -- move goo
 https://gist.github.com/iminurnamez/8d51f5b40032f106a847 or https://github.com/Mekire/pygame-mutiscene-template-with-movie and
 https://archives.seul.org/pygame/users/Jul-2007/msg00268.html -- game state engines
 
+Player movement 
+	- left/right a & d
+	- weapon is a turret with 180 degree pivot radius
 
 Add controller support
+
+Make Win/Loose messages a scene with a timer or button instead
 
 All projectiles and other on screen entities that move should inherit from entity class so that they can benefit from vector based movement
 

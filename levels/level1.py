@@ -117,63 +117,16 @@ class Level1(GameState):
             if event.button == 1:
                 self.player.weapon.cease_fire()
 
-    def update(self, dt):
-        multiplier = int(self.streak/2) or 1
-        total_score = int(self.score * 100) or 0
-        self.hud_ammo.prop = self.ammo
-        self.hud_score.prop = total_score
-        self.hud_multiplier.prop = multiplier
+
+    def bullet_mechanics(self, multiplier, total_score):
+         # --- calculate mechanics for each bullet
 
         if self.player.weapon.firing_timer.is_finished() and self.ammo > 0:
             bullet = self.player.weapon.ammo_type(self.player.rect.center)
             self.bullet_list.add(bullet)
             self.shots_fired += 1
             self.ammo -= 1
-
-        # --- Game logic
-
-        # call the update method on all the sprites
-        self.player.update()
-        self.bullet_list.update(dt)
-        self.boss_list.update(dt, self.player.rect.center)
-        self.enemy_list.update(dt, self.player.rect.center)
-        self.asteroid_list.update()
-        self.hud_items.update()
-
-        # --- handle collisions
-        player_hit_list = pygame.sprite.spritecollide(
-            self.player, self.asteroid_list, False, pygame.sprite.collide_mask)
-
-        if player_hit_list:
-            pygame.mixer.music.fadeout(1000)
-            message_display('YOU LOOSE HIT BY ASTEROID!!!', WHITE, pygame.display.get_surface(), (700, 400))
-
-            self.done = True
-
-        player_enemy_hit_list = pygame.sprite.spritecollide(
-            self.player, self.enemy_list, False, pygame.sprite.collide_mask)
-
-        if player_enemy_hit_list:
-            for enemy in player_enemy_hit_list:
-                if not enemy.hit:
-                    pygame.mixer.music.fadeout(1000)
-                    message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, pygame.display.get_surface(), (700, 400))
-
-                    self.done = True
-
-        player_boss_hit_list = pygame.sprite.spritecollide(
-            self.player, self.boss_list, False, pygame.sprite.collide_mask)
-
-        if player_boss_hit_list:
-            for boss in player_boss_hit_list:
-                if not boss.hit:
-                    pygame.mixer.music.fadeout(1000)
-                    message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, pygame.display.get_surface(), (700, 400))
-
-                    self.done = True
-
-
-        # --- calculate mechanics for each bullet
+            
         for bullet in self.bullet_list:
 
             # see if bullet hit a enemy
@@ -216,6 +169,40 @@ class Level1(GameState):
                 self.streak = 0
                 self.misses += 1
 
+    def player_collisions(self):
+         # --- handle collisions
+        player_hit_list = pygame.sprite.spritecollide(
+            self.player, self.asteroid_list, False, pygame.sprite.collide_mask)
+
+        if player_hit_list:
+            pygame.mixer.music.fadeout(1000)
+            message_display('YOU LOOSE HIT BY ASTEROID!!!', WHITE, pygame.display.get_surface(), (700, 400))
+
+            self.done = True
+
+        player_enemy_hit_list = pygame.sprite.spritecollide(
+            self.player, self.enemy_list, False, pygame.sprite.collide_mask)
+
+        if player_enemy_hit_list:
+            for enemy in player_enemy_hit_list:
+                if not enemy.hit:
+                    pygame.mixer.music.fadeout(1000)
+                    message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, pygame.display.get_surface(), (700, 400))
+
+                    self.done = True
+
+        player_boss_hit_list = pygame.sprite.spritecollide(
+            self.player, self.boss_list, False, pygame.sprite.collide_mask)
+
+        if player_boss_hit_list:
+            for boss in player_boss_hit_list:
+                if not boss.hit:
+                    pygame.mixer.music.fadeout(1000)
+                    message_display('YOU LOOSE HIT BY ENEMY!!!', WHITE, pygame.display.get_surface(), (700, 400))
+
+                    self.done = True
+
+    def check_game_over(self, total_score):
         # checking enemy list is empty ensures that the last explode() has completed
         # before ending game;)
         if not self.enemy_list and not self.boss_list:
@@ -236,6 +223,26 @@ class Level1(GameState):
                 message_display('YOU WIN!!! total score: {}'
                     .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
             self.done = True
+
+    def update(self, dt):
+        multiplier = int(self.streak/2) or 1
+        total_score = int(self.score * 100) or 0
+        self.hud_ammo.prop = self.ammo
+        self.hud_score.prop = total_score
+        self.hud_multiplier.prop = multiplier
+
+        # call the update method on all the sprites
+        self.player.update()
+        self.bullet_list.update(dt)
+        self.boss_list.update(dt, self.player.rect.center)
+        self.enemy_list.update(dt, self.player.rect.center)
+        self.asteroid_list.update()
+        self.hud_items.update()
+
+        self.player_collisions()
+        self.bullet_mechanics(multiplier, total_score)
+
+        self.check_game_over(total_score)
 
     def draw(self, surface):
         surface.fill(WHITE)
