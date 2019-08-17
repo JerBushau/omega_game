@@ -1,7 +1,7 @@
 import pygame
 import random
 from components.entity import Entity
-from timer import Timer, Timer2
+from timer import Timer
 
 vec = pygame.math.Vector2
 
@@ -20,9 +20,9 @@ class Enemy(Entity):
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
         self.attacking = False
-        self.death_animation_timer = Timer2(1100)
+        self.death_animation_timer = Timer(1100)
         self.attack_timing = random.randrange(2000, 12000)
-        self.attack_timer = Timer2(self.attack_timing)
+        self.attack_timer = Timer(self.attack_timing)
 
 
     def explode(self):

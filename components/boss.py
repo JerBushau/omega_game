@@ -1,7 +1,7 @@
 import pygame
 from random import randint, uniform, choice
 from components.entity import Entity
-from timer import Timer, Timer2
+from timer import Timer
 vec = pygame.math.Vector2
 
 WIDTH = 700
@@ -18,8 +18,8 @@ class Boss(Entity):
         self.hp = 600
         self.is_in_attack_mode = False
         self.attack_duration = 5000
-        self.attack_timer = Timer2(self.attack_duration)
-        self.death_animation_timer = Timer2(6000)
+        self.attack_timer = Timer(self.attack_duration)
+        self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
         self.return_point = choice([(600, 100), (50, 200), (350, 90)])
