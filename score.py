@@ -28,3 +28,6 @@ class Score:
     def update_ts(self, score):
         self.top_score = score
         self.write_score()
+
+
+top_score = Score()

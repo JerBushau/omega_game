@@ -12,6 +12,7 @@ from components.asteroid import Asteroid, Asteroid_group
 from components.chain_lightning import Chain_Lightning
 from score import Score
 from timer import Timer2
+from game_state_engine import Game, GameState
 # create a file for constant vars colors bgs etc
 
 BACKGROUND = 'assets/background.png'
@@ -21,7 +22,7 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# 
+#
 # handy functions from a tutorial needs re-write to better suit my needs
 def text_objects(text, font, color):
     """Creates 'text objects' for displaying messages"""
@@ -66,6 +67,69 @@ def button(msg, x, y, width, height, colors, surface, action=None):
     pygame.display.update()
 
 
+class StartScreen(GameState):
+
+    def __init__(self):
+        super().__init__()
+        self.background = Background(START_BG, [0, 0])
+        self.top_score_hud = Hud(10, 350, 200, 40, "TOP SCORE")
+        self.score = Score()
+        self.next_state = 'LEVEL1'
+
+    def startup(self):
+        pygame.mouse.set_visible(True)
+        self.top_score_hud.prop = self.score.top_score
+
+
+    def get_event(self, event):
+        if event.type == pygame.QUIT:
+            self.done = True
+
+
+    def end(self):
+        self.done = True
+
+
+    def draw(self, surface):
+        surface.blit(background.image, background.rect)
+
+        large_text = pygame.font.Font('freesansbold.ttf',80)
+        text_surf, text_rect = text_objects("OMEGA!", large_text, (210,208,224))
+        text_rect.center = ((700/2),(400/2.75))
+        surface.blit(text_surf, text_rect)
+        button('PLAY', ((700/2) - 50), 240, 100, 40,
+              ((37,31,71), (108,100,153), (210,208,224)), surface, self.end)
+
+
+
+    def update(self, dt):
+        top_score_hud.update(dest=surface)
+
+
+
+
+class Level1(GameState):
+
+    def __init__(self):
+        super().__init__()
+
+
+    def startup(self):
+        pass
+
+
+    def get_event(self, event):
+        pass
+
+
+    def update(self, dt):
+        pass
+
+
+    def draw(self, surface):
+        pass
+
+
 class Game(object):
     """Controls entire game"""
     def __init__(self):
@@ -73,7 +137,7 @@ class Game(object):
         self.clock = pygame.time.Clock()
         # global obj to track high scores
         self.scores = Score()
-        
+
 
     def pygame_setup(self):
         """Initializes pygame and produces a surface to blit on"""
@@ -95,8 +159,8 @@ class Game(object):
     def start_loop(self):
         """Loop for start screen"""
         selected = False
-        background = Background(START_BG, [0, 0])
-        top_score = Hud(10, 350, 200, 40, "TOP SCORE")
+        # background = Background(START_BG, [0, 0])
+        # top_score = Hud(10, 350, 200, 40, "TOP SCORE")
 
         def launch_game():
             nonlocal selected
@@ -108,24 +172,22 @@ class Game(object):
                 if event.type == pygame.QUIT:
                     selected = True
 
-            top_score.prop = self.scores.top_score
-            self.clock.tick(20)
-            pygame.mouse.set_visible(True)
-            self.screen.blit(background.image, background.rect)
+            # top_score.prop = self.scores.top_score
+            # self.screen.blit(background.image, background.rect)
 
-            large_text = pygame.font.Font('freesansbold.ttf',80)
-            text_surf, text_rect = text_objects("OMEGA!", large_text, (210,208,224))
-            text_rect.center = ((self.screen_width/2),(self.screen_height/2.75))
-            self.screen.blit(text_surf, text_rect)
+            # large_text = pygame.font.Font('freesansbold.ttf',80)
+            # text_surf, text_rect = text_objects("OMEGA!", large_text, (210,208,224))
+            # text_rect.center = ((self.screen_width/2),(self.screen_height/2.75))
+            # self.screen.blit(text_surf, text_rect)
 
-            top_score.update(dest=self.screen)
-            button('PLAY', ((self.screen_width/2) - 50), 240, 100, 40,
-                  ((37,31,71), (108,100,153), (210,208,224)), self.screen, launch_game)
+            # top_score.update(dest=self.screen)
+            # button('PLAY', ((self.screen_width/2) - 50), 240, 100, 40,
+            #       ((37,31,71), (108,100,153), (210,208,224)), self.screen, launch_game)
 
 
     def game_loop(self):
         """All gameplay setup and logic"""
-        # start the game music 
+        # start the game music
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
         # set the background
@@ -141,7 +203,7 @@ class Game(object):
         misses = 0
 
         # uncomment this line to hide the system mouse when game window is in focus
-        # pygame.mouse.set_visible(False) 
+        # pygame.mouse.set_visible(False)
 
         #  list of every sprite
         all_sprites_list = pygame.sprite.Group()
@@ -197,7 +259,7 @@ class Game(object):
             hud_score.prop = total_score
             hud_multiplier.prop = multiplier
 
-            # --- Event Processing --- Controls 
+            # --- Event Processing --- Controls
             for event in pygame.event.get():
                 player_pos = player.rect.center
 
@@ -220,7 +282,7 @@ class Game(object):
                         bullet_list.add(bullet)
                         shots_fired += 1
                         ammo -= 1
-                        
+
 
                     elif can_fire and event.button == 3:
                         for i in range(3):
