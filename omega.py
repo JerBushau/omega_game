@@ -12,7 +12,7 @@ from components.asteroid import Asteroid, Asteroid_group
 from components.chain_lightning import Chain_Lightning
 from score import scores
 from timer import Timer2
-from game_state_engine import Game, GameState
+from gamestate import GameState
 # create a file for constant vars colors bgs etc
 
 BACKGROUND = 'assets/background.png'
@@ -76,7 +76,6 @@ class StartScreen(GameState):
 
     def startup(self, persistent):
         pygame.mouse.set_visible(True)
-        self.top_score_hud.prop = self.scores.top_score
         super().startup(persistent)
 
 
@@ -102,7 +101,7 @@ class StartScreen(GameState):
 
 
     def update(self, dt):
-        pass
+        self.top_score_hud.prop = self.scores.top_score
 
 
 
