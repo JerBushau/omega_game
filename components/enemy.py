@@ -14,7 +14,7 @@ class Enemy(Entity):
     """ represents the enemy """
 
     def __init__(self):
-        super().__init__(ENEMY, (175, 450, 120), vec(random.randint(0, 700), random.randint(0, 200)))
+        super().__init__(ENEMY, (175, 550, 120), vec(random.randint(0, 700), random.randint(0, 200)))
         self.return_pos = vec(random.choice([random.randint(-10, -5), random.randint(701, 720)]), random.randint(50, 200))
         self.mask = pygame.mask.from_surface(self.image)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')

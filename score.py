@@ -30,4 +30,4 @@ class Score:
         self.write_score()
 
 
-top_score = Score()
+scores = Score()

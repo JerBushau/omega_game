@@ -43,16 +43,11 @@ class Boss(Entity):
             self.acc = self.seek((self.pos.x, HEIGHT + 40))
 
 
-    def draw(self, screen):
-        """ draw boss specifically """
-        screen.blit(self.image, self.rect)
-
-
     def update(self, dt, target):
 
         if not self.attack_timer.is_active:
             self.attack_timer.start()
-    
+
         if self.is_in_attack_mode == True:
             self.attack_timer.set_duration(self.attack_duration / 1.8)
         else:
