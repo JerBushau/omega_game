@@ -14,11 +14,11 @@ class Bullet(pygame.sprite.Sprite):
         self.image.fill(LAZER)
         self.rect = self.image.get_rect()
         self.rect.center = pos
-        self.speed = 5
+        self.speed = 10
 
         self.sound.play()
 
-    def update(self):
+    def update(self, dt):
         """ move the bullet """
 
         self.rect.y -= self.speed

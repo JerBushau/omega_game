@@ -43,9 +43,9 @@ class Wobble_shot(Bullet):
             self.wobble = 'right'
 
 
-    def update(self):
+    def update(self, dt):
 
-        super().update()
+        super().update(dt)
 
         self.wobble_animation()
         self.grow_animation()

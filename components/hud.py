@@ -23,6 +23,7 @@ class Hud(pygame.sprite.Sprite):
         self.height = height
         self.label = label
         self.delimiter = delimiter
+        self.prop = 0
 
     # should probably fix this to work with update now
     def update(self, dest=None):
@@ -35,7 +36,7 @@ class Hud(pygame.sprite.Sprite):
         self.text_rect = self.text.get_rect()
         self.text_rect.center = ((self.text_rect.x + (self.width/2),
                                 (self.text_rect.y + (self.height/2))))
-        
+
         self.image.blit(self.text, self.text_rect)
 
         if dest:
