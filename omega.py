@@ -1,11 +1,9 @@
 import pygame
-import random
 import time
 from components.background import Background
 from components.hud import Hud
 from levels.level1 import Level1
 from score import scores
-from timer import Timer2
 from gamestate import GameState
 from game import Game
 

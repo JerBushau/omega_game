@@ -1,11 +1,11 @@
 import pygame
-from timer import Timer2
+from timer import Timer
 
 class Weapon:
-    
+
     def __init__(self, ammo_type):
         self.is_firing = False
-        self.firing_timer = Timer2(180)
+        self.firing_timer = Timer(180)
         self.ammo_type = ammo_type
 
 
