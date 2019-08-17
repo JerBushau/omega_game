@@ -66,5 +66,4 @@ class Boss(Entity):
 
         if self.death_animation_timer.is_active and self.hit:
             self.death_animation()
-        # equations of motion
         super().update(dt)

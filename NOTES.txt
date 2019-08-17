@@ -3,22 +3,21 @@ TODO:
 https://github.com/justinmeister/pygame-animation-example/blob/master/animation_example.py -- a lot of good game examples on this GH
 https://www.youtube.com/playlist?list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3 -- incredible resource
 https://courses.lumenlearning.com/boundless-physics/chapter/vectors/ -- move good info on vectors/scalars
+https://gist.github.com/iminurnamez/8d51f5b40032f106a847 or https://github.com/Mekire/pygame-mutiscene-template-with-movie and
+https://archives.seul.org/pygame/users/Jul-2007/msg00268.html -- game state engines
 
-Create game state engine to facilitate levels and way to progress though levels -- something like https://gist.github.com/iminurnamez/8d51f5b40032f106a847 or https://github.com/Mekire/pygame-mutiscene-template-with-movie 
-	or pretty simple one at https://archives.seul.org/pygame/users/Jul-2007/msg00268.html
 
 Add controller support
 
-Learn more about vector based movement and kinematic formulas https://www.khanacademy.org/science/physics/one-dimensional-motion/kinematic-formulas/a/what-are-the-kinematic-formulas 
-	to understand more about time based movement. https://www.youtube.com/watch?v=TIiYJaY8ZR0&list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3&index=2
-
 All projectiles and other on screen entities that move should inherit from entity class so that they can benefit from vector based movement
-
-Add player abilities such as armor, increased attack speed, shield that pushes enemies away from player within a given radius
 
 Create more robust player class that takes a weapon and ship parameter
 
-Create weapon, ammo, and ship class. Weapon should take ammo param and ship should take the weap
+Create notification system
+
+Add player abilities such as armor, increased attack speed, shield that pushes enemies within a given radius away from player
+
+Create ship class. Weapon should take ammo param and ship should take the weap
 
 Create a base class (based on Entity class) for enemies allowing for more robust enemies in the future
 

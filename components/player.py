@@ -18,12 +18,13 @@ class Player(pygame.sprite.Sprite):
         self.rect.centerx = self.rect.width / 2
         self.speed = 4
         self.weapon = Weapon(Bullet)
-        
+
 
     def draw(self, screen):
         """ draw player specifically """
 
         screen.blit(self.image, self.rect)
+
 
     def update(self):
         """ update the player's position to the mouse x position """
