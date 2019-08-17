@@ -42,18 +42,19 @@ class Level1(GameState):
         super().__init__()
         self.scores = scores
         self.background = Background(BACKGROUND, [0,0])
-        self.num_of_enemies = 15
-        self.score = 0
-        self.shots_fired = 0
-        self.ammo = int(self.num_of_enemies * 10)
-        self.streak = 1
-        self.misses = 0
         self.next_state = 'START'
 
     def startup(self, persistent):
         pygame.mixer.music.load('assets/music/Omega.ogg')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
+
+        self.num_of_enemies = 15
+        self.score = 0
+        self.shots_fired = 0
+        self.streak = 1
+        self.misses = 0
+        self.ammo = int(self.num_of_enemies * 10)
 
         self.enemy_list = pygame.sprite.Group()
         self.asteroid_list = Asteroid_group()
