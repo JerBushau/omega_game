@@ -122,7 +122,6 @@ class Level1(GameState):
 
 
     def startup(self, persistent):
-        pygame.mixer.pre_init(frequency=22050, size=8, channels=2, buffer=1024)
         pygame.mixer.music.load('assets/music/Omega.ogg')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
@@ -394,6 +393,7 @@ class Game(object):
 
 
 if __name__ == '__main__':
+    pygame.mixer.pre_init(frequency=22050, size=8, channels=2, buffer=1024)
     pygame.init()
     screen = pygame.display.set_mode((700, 400))
     states = {"START": StartScreen(),
