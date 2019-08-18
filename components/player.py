@@ -49,14 +49,20 @@ class Player(Entity):
         self.direction = direction
 
     def update(self, dt):
-        """ update the player's position to the mouse x position """ 
+        """ update the player's position to the mouse x position """
         if self.direction == 'left':
             self.acc = vec(-700, 0)
         elif self.direction == 'right':
             self.acc = vec(700, 0)
         elif self.direction == 'stop':
             self.acc = vec(0 ,0)
+
+        if self.pos[0] > 690:
+            self.pos[0] = 690
+        elif self.pos[0] < 10:
+            self.pos[0] = 10
         super().update(dt)
+
 
         # if self.rect.centerx + 5 == 0 or self.rect.x - 5 == 0:
         #     self.rect.centerx = pos[0]
