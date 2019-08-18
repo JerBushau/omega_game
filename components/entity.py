@@ -22,7 +22,6 @@ class Entity(pygame.sprite.Sprite):
         self.rect.center = self.pos
         self.acc = vec(0, 0)
 
-
     def flee(self, target):
         steer = vec(0, 0)
         dist = self.pos - target
@@ -35,14 +34,12 @@ class Entity(pygame.sprite.Sprite):
             steer.scale_to_length(self.max_force)
         return steer
 
-
     def seek(self, target):
         self.desired = (target - self.pos).normalize() * self.max_speed
         steer = (self.desired - self.vel)
         if steer.length() > self.max_force:
             steer.scale_to_length(self.max_force)
         return steer
-
 
     def seek_with_approach(self, target):
         self.desired = (target - self.pos)
@@ -56,7 +53,6 @@ class Entity(pygame.sprite.Sprite):
         if steer.length() > self.max_force:
             steer.scale_to_length(self.max_force)
         return steer
-
 
     def update(self, delta_time):
         # equations of motion

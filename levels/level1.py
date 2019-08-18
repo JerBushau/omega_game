@@ -49,7 +49,7 @@ class Level1(GameState):
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
 
-        self.num_of_enemies = 15
+        self.num_of_enemies = 1
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -116,6 +116,20 @@ class Level1(GameState):
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 self.player.weapon.cease_fire()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                self.player.move('left')
+
+            if event.key == pygame.K_d:
+                self.player.move('right')
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                self.player.move('stop')
+            
+            if event.key == pygame.K_d:
+                self.player.move('stop')
 
 
     def bullet_mechanics(self, multiplier, total_score):
@@ -232,16 +246,15 @@ class Level1(GameState):
         self.hud_multiplier.prop = multiplier
 
         # call the update method on all the sprites
-        self.player.update()
+        self.player.update(dt)
         self.bullet_list.update(dt)
         self.boss_list.update(dt, self.player.rect.center)
         self.enemy_list.update(dt, self.player.rect.center)
         self.asteroid_list.update()
         self.hud_items.update()
 
-        self.player_collisions()
+        # self.player_collisions()
         self.bullet_mechanics(multiplier, total_score)
-
         self.check_game_over(total_score)
 
     def draw(self, surface):
