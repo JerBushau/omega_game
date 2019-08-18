@@ -1,25 +1,27 @@
 import pygame
+import math
+from components.entity import Entity
+vec = pygame.math.Vector2
 
 LAZER = (0, 255, 43)
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(Entity):
     """ represents Projectiles """
 
     def __init__(self, pos):
-        super().__init__()
+        super().__init__(pygame.Surface([4, 10], pygame.SRCALPHA), (2000, 100, 120), pos)
+        self.m_pos = pygame.mouse.get_pos()
+        self.pos = vec(pos)
+        des = self.pos - self.m_pos
+        angle = math.atan2(des.x, des.y)
+        angle %= 2*math.pi
         self.sound = pygame.mixer.Sound('assets/sounds/ship_lazer.ogg')
-        self.height = 10
-        self.width = 4
-        self.image = pygame.Surface([self.width, self.height])
         self.image.fill(LAZER)
-        self.rect = self.image.get_rect()
-        self.rect.center = pos
-        self.speed = 10
+        self.image = pygame.transform.rotate(self.image, math.degrees(angle))
+        self.acc = (self.m_pos - self.pos).normalize() * self.max_speed
 
         self.sound.play()
 
     def update(self, dt):
         """ move the bullet """
-
-        self.rect.y -= self.speed
-
+        super().update(dt)

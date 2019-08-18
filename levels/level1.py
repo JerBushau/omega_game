@@ -49,12 +49,14 @@ class Level1(GameState):
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
 
+        self.phase = 0
+
         self.num_of_enemies = 15
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
         self.misses = 0
-        self.ammo = int(self.num_of_enemies * 10)
+        self.ammo = int(self.num_of_enemies * 100)
 
         self.enemy_list = pygame.sprite.Group()
         self.asteroid_list = Asteroid_group()
@@ -117,30 +119,74 @@ class Level1(GameState):
             if event.button == 1:
                 self.player.weapon.cease_fire()
 
-    def update(self, dt):
-        multiplier = int(self.streak/2) or 1
-        total_score = int(self.score * 100) or 0
-        self.hud_ammo.prop = self.ammo
-        self.hud_score.prop = total_score
-        self.hud_multiplier.prop = multiplier
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                self.player.move('left')
+
+            if event.key == pygame.K_d:
+                self.player.move('right')
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                self.player.move('stop')
+            
+            if event.key == pygame.K_d:
+                self.player.move('stop')
+
+
+    def bullet_mechanics(self, multiplier, total_score):
+         # --- calculate mechanics for each bullet
 
         if self.player.weapon.firing_timer.is_finished() and self.ammo > 0:
             bullet = self.player.weapon.ammo_type(self.player.rect.center)
             self.bullet_list.add(bullet)
             self.shots_fired += 1
             self.ammo -= 1
+            
+        for bullet in self.bullet_list:
 
-        # --- Game logic
+            # see if bullet hit a enemy
+            enemy_hit_list = pygame.sprite.spritecollide(
+                bullet, self.enemy_list, False)
 
-        # call the update method on all the sprites
-        self.player.update()
-        self.bullet_list.update(dt)
-        self.boss_list.update(dt, self.player.rect.center)
-        self.enemy_list.update(dt, self.player.rect.center)
-        self.asteroid_list.update()
-        self.hud_items.update()
+            # see if asteroid hit ship
+            asteroid_hit_list = pygame.sprite.spritecollide(
+                bullet, self.asteroid_list, False)
 
-        # --- handle collisions
+            boss_hit_list = pygame.sprite.spritecollide(
+                bullet, self.boss_list, False)
+
+            for boss in boss_hit_list:
+                boss.hp -= 15
+                self.bullet_list.remove(bullet)
+
+                if boss.hp <= 0:
+                    self.score += (150 * multiplier)
+                    boss.explode()
+
+            for asteroid in asteroid_hit_list:
+                asteroid.hp -= 3
+                if asteroid.hp <= 0:
+                    self.score += 20
+                self.bullet_list.remove(bullet)
+
+            # for each enemy hit, remove the bullet and add to the score
+            for enemy in enemy_hit_list:
+
+                if not enemy.hit:
+                    self.bullet_list.remove(bullet)
+                    self.score += (1 * multiplier)
+                    self.streak += 1
+                    enemy.explode()
+
+             # remove the bullet if it flies up off the screen
+            if bullet.rect.y < -50:
+                self.bullet_list.remove(bullet)
+                self.streak = 0
+                self.misses += 1
+
+    def player_collisions(self):
+         # --- handle collisions
         player_hit_list = pygame.sprite.spritecollide(
             self.player, self.asteroid_list, False, pygame.sprite.collide_mask)
 
@@ -172,53 +218,18 @@ class Level1(GameState):
 
                     self.done = True
 
-
-        # --- calculate mechanics for each bullet
-        for bullet in self.bullet_list:
-
-            # see if bullet hit a enemy
-            enemy_hit_list = pygame.sprite.spritecollide(
-                bullet, self.enemy_list, False)
-
-            # see if asteroid hit ship
-            asteroid_hit_list = pygame.sprite.spritecollide(
-                bullet, self.asteroid_list, False)
-
-            boss_hit_list = pygame.sprite.spritecollide(
-                bullet, self.boss_list, False)
-
-            for boss in boss_hit_list:
-                boss.hp -= 15
-                self.bullet_list.remove(bullet)
-
-                if boss.hp <= 0:
-                    self.score += (150 * multiplier)
-                    self.boss.explode()
-
-            for asteroid in asteroid_hit_list:
-                asteroid.hp -= 3
-                if asteroid.hp <= 0:
-                    self.score += 20
-                self.bullet_list.remove(bullet)
-
-            # for each enemy hit, remove the bullet and add to the score
-            for enemy in enemy_hit_list:
-
-                if not enemy.hit:
-                    self.bullet_list.remove(bullet)
-                    self.score += (1 * multiplier)
-                    self.streak += 1
-                    enemy.explode()
-
-             # remove the bullet if it flies up off the screen
-            if bullet.rect.y < -50:
-                self.bullet_list.remove(bullet)
-                self.streak = 0
-                self.misses += 1
-
+    def check_game_over(self, total_score):
         # checking enemy list is empty ensures that the last explode() has completed
         # before ending game;)
         if not self.enemy_list and not self.boss_list:
+            if self.phase == 0:
+                self.phase = 1
+                boss2 = Boss((-30, -30))
+                boss3 = Boss((445, -30))
+                boss4 = Boss((-30, 100))
+                self.boss_list.add(boss2, boss3, boss4)
+                return
+
             print('winner', self.shots_fired, self.score, total_score)
             pygame.mixer.music.fadeout(1000)
             perfect = self.shots_fired <= self.num_of_enemies and not self.misses
@@ -236,6 +247,25 @@ class Level1(GameState):
                 message_display('YOU WIN!!! total score: {}'
                     .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
             self.done = True
+
+    def update(self, dt):
+        multiplier = int(self.streak/2) or 1
+        total_score = int(self.score * 100) or 0
+        self.hud_ammo.prop = self.ammo
+        self.hud_score.prop = total_score
+        self.hud_multiplier.prop = multiplier
+
+        # call the update method on all the sprites
+        self.player.update(dt)
+        self.bullet_list.update(dt)
+        self.boss_list.update(dt, self.player.rect.center)
+        self.enemy_list.update(dt, self.player.rect.center)
+        self.asteroid_list.update()
+        self.hud_items.update()
+
+        self.player_collisions()
+        self.bullet_mechanics(multiplier, total_score)
+        self.check_game_over(total_score)
 
     def draw(self, surface):
         surface.fill(WHITE)
