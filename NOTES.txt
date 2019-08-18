@@ -1,16 +1,20 @@
-TODO:
------
+LINKS:
+------
 https://github.com/justinmeister/pygame-animation-example/blob/master/animation_example.py -- a lot of good game examples on this GH
 https://www.youtube.com/playlist?list=PLsk-HSGFjnaHYvbjMbTQG6kLhhZHLzdb3 -- incredible resource
 https://courses.lumenlearning.com/boundless-physics/chapter/vectors/ -- move good info on vectors/scalars
 https://gist.github.com/iminurnamez/8d51f5b40032f106a847 or https://github.com/Mekire/pygame-mutiscene-template-with-movie and
 https://archives.seul.org/pygame/users/Jul-2007/msg00268.html -- game state engines
 
-Player movement 
-	- left/right a & d
-	- weapon is a turret with 180 degree pivot radius
+TODO:
+-----
+Add controller support -- https://www.pygame.org/docs/ref/joystick.html#module-pygame.joystick
 
-Add controller support
+Change aspect ratio
+
+New art: weapons, ships, enemies, bosses, sheilds, various power up effects, ammo projectiles,
+
+Learn about and add particle effects
 
 Make Win/Loose messages a scene with a timer or button instead
 

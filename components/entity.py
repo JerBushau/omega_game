@@ -64,8 +64,8 @@ class Entity(pygame.sprite.Sprite):
             self.pos.x = 0
         elif self.pos.x < 0:
             self.pos.x = WIDTH
-        if self.pos.y > HEIGHT + 50:
-            self.pos.y = HEIGHT + 50
-        elif self.pos.y < -50:
-            self.pos.y = -50
+        if self.pos.y > HEIGHT + 70:
+            self.pos.y = HEIGHT + 70
+        elif self.pos.y < -70:
+            self.pos.y = -70
         self.rect.center = self.pos

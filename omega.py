@@ -81,6 +81,7 @@ class StartScreen(GameState):
 if __name__ == '__main__':
     pygame.mixer.pre_init(frequency=22050, size=8, channels=2, buffer=1024)
     pygame.init()
+
     screen = pygame.display.set_mode((700, 400))
     states = {"START": StartScreen(),
               "LEVEL1": Level1()}

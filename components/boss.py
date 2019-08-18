@@ -22,7 +22,7 @@ class Boss(Entity):
         self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
-        self.return_point = choice([(600, 100), (50, 200), (350, 90)])
+        self.return_point = choice([(500, 100), (50, 200), (350, 100)])
 
     def explode(self):
         """ mark enemy as hit """

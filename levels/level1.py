@@ -51,7 +51,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 15
+        self.num_of_enemies = 1
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -63,14 +63,11 @@ class Level1(GameState):
         self.bullet_list = pygame.sprite.Group()
         self.boss_list = pygame.sprite.Group()
         self.hud_items = pygame.sprite.Group()
-        self.boss = Boss()
         self.player = Player()
 
         for i in range(self.num_of_enemies):
             enemy = Enemy()
             self.enemy_list.add(enemy)
-
-        self.boss_list.add(self.boss)
 
         self.hud_score = Hud(570, 350, 120, 40, 'SCORE')
         self.hud_ammo = Hud(570, 300, 120, 40, 'AMMO')
@@ -88,7 +85,7 @@ class Level1(GameState):
             pygame.quit()
             quit()
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             can_fire = self.ammo > 0
             if can_fire and event.button == 1:
                 self.player.weapon.begin_fire()
@@ -129,7 +126,7 @@ class Level1(GameState):
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
                 self.player.move('stop')
-            
+
             if event.key == pygame.K_d:
                 self.player.move('stop')
 
@@ -142,7 +139,7 @@ class Level1(GameState):
             self.bullet_list.add(bullet)
             self.shots_fired += 1
             self.ammo -= 1
-            
+
         for bullet in self.bullet_list:
 
             # see if bullet hit a enemy
@@ -224,10 +221,10 @@ class Level1(GameState):
         if not self.enemy_list and not self.boss_list:
             if self.phase == 0:
                 self.phase = 1
-                boss2 = Boss((-30, -30))
-                boss3 = Boss((445, -30))
-                boss4 = Boss((-30, 100))
-                self.boss_list.add(boss2, boss3, boss4)
+                # boss1 = Boss((-30, -30))
+                boss2 = Boss((445, -30))
+                boss3 = Boss((200, -30))
+                self.boss_list.add(boss2, boss3)
                 return
 
             print('winner', self.shots_fired, self.score, total_score)
