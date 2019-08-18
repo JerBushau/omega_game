@@ -49,12 +49,14 @@ class Level1(GameState):
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
 
-        self.num_of_enemies = 1
+        self.phase = 0
+
+        self.num_of_enemies = 15
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
         self.misses = 0
-        self.ammo = int(self.num_of_enemies * 10)
+        self.ammo = int(self.num_of_enemies * 100)
 
         self.enemy_list = pygame.sprite.Group()
         self.asteroid_list = Asteroid_group()
@@ -160,7 +162,7 @@ class Level1(GameState):
 
                 if boss.hp <= 0:
                     self.score += (150 * multiplier)
-                    self.boss.explode()
+                    boss.explode()
 
             for asteroid in asteroid_hit_list:
                 asteroid.hp -= 3
@@ -220,6 +222,14 @@ class Level1(GameState):
         # checking enemy list is empty ensures that the last explode() has completed
         # before ending game;)
         if not self.enemy_list and not self.boss_list:
+            if self.phase == 0:
+                self.phase = 1
+                boss2 = Boss((-30, -30))
+                boss3 = Boss((445, -30))
+                boss4 = Boss((-30, 100))
+                self.boss_list.add(boss2, boss3, boss4)
+                return
+
             print('winner', self.shots_fired, self.score, total_score)
             pygame.mixer.music.fadeout(1000)
             perfect = self.shots_fired <= self.num_of_enemies and not self.misses
@@ -253,7 +263,7 @@ class Level1(GameState):
         self.asteroid_list.update()
         self.hud_items.update()
 
-        # self.player_collisions()
+        self.player_collisions()
         self.bullet_mechanics(multiplier, total_score)
         self.check_game_over(total_score)
 

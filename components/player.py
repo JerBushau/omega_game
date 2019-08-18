@@ -12,7 +12,7 @@ class Player(Entity):
     """ represents the Player. """
 
     def __init__(self):
-        super().__init__(PLAYER, (300, 500, 120))
+        super().__init__(PLAYER, (130, 200, 120))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 700 / 2 - 40
@@ -51,7 +51,7 @@ class Player(Entity):
     def update(self, dt):
         """ update the player's position to the mouse x position """ 
         if self.direction == 'left':
-            self.acc = vec(-self.pos[0], 0)
+            self.acc = vec(-700, 0)
         elif self.direction == 'right':
             self.acc = vec(700, 0)
         elif self.direction == 'stop':
