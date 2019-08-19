@@ -51,23 +51,20 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 1
+        self.num_of_enemies = 25
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
         self.misses = 0
-        self.ammo = int(self.num_of_enemies * 100)
 
         self.enemy_list = pygame.sprite.Group()
         self.asteroid_list = Asteroid_group()
-        self.bullet_list = pygame.sprite.Group()
         self.boss_list = pygame.sprite.Group()
         self.hud_items = pygame.sprite.Group()
         self.player = Player()
 
         for i in range(self.num_of_enemies):
-            enemy = Enemy()
-            self.enemy_list.add(enemy)
+            Enemy(self.enemy_list)
 
         self.hud_score = Hud(570, 350, 120, 40, 'SCORE')
         self.hud_ammo = Hud(570, 300, 120, 40, 'AMMO')
@@ -85,62 +82,20 @@ class Level1(GameState):
             pygame.quit()
             quit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            can_fire = self.ammo > 0
-            if can_fire and event.button == 1:
-                self.player.weapon.begin_fire()
-                bullet = self.player.weapon.ammo_type(self.player.rect.center)
-                self.bullet_list.add(bullet)
-                self.shots_fired += 1
-                self.ammo -= 1
-
-            elif can_fire and event.button == 3:
-                for i in range(3):
-                    bullet = Chain_Lightning(self.player.rect.center)
-                    bullet.find_next_target(self.enemy_list.sprites() + self.boss_list.sprites())
-                    self.bullet_list.add(bullet)
-                    self.shots_fired += 1
-                    self.ammo -= 1
-
-            elif event.button == 2:
-                self.ammo += 30
-
-            elif not can_fire:
-                print('you loose')
-                pygame.mixer.music.fadeout(1000)
-                message_display('YOU LOOSE OUT OF AMMO!!!', WHITE, pygame.display.get_surface(), (700, 400))
-
-                self.done = True
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1:
-                self.player.weapon.cease_fire()
-
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                self.player.move('left')
-
-            if event.key == pygame.K_d:
-                self.player.move('right')
-
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
-                self.player.move('stop')
-
-            if event.key == pygame.K_d:
-                self.player.move('stop')
+        self.player.get_event(event,
+                              enemy_list=self.enemy_list,
+                              boss_list=self.boss_list,
+                              shots_fired=self.shots_fired,
+                              done=self.done)
 
 
-    def bullet_mechanics(self, multiplier, total_score):
+    def bullet_mechanics(self, multiplier):
          # --- calculate mechanics for each bullet
 
-        if self.player.weapon.firing_timer.is_finished() and self.ammo > 0:
-            bullet = self.player.weapon.ammo_type(self.player.rect.center)
-            self.bullet_list.add(bullet)
-            self.shots_fired += 1
-            self.ammo -= 1
+        self.player.weapon.fire(self.player.rect.center)
+        self.shots_fired += 1
 
-        for bullet in self.bullet_list:
+        for bullet in self.player.weapon.bullets:
 
             # see if bullet hit a enemy
             enemy_hit_list = pygame.sprite.spritecollide(
@@ -155,7 +110,7 @@ class Level1(GameState):
 
             for boss in boss_hit_list:
                 boss.hp -= 15
-                self.bullet_list.remove(bullet)
+                bullet.kill()
 
                 if boss.hp <= 0:
                     self.score += (150 * multiplier)
@@ -165,20 +120,19 @@ class Level1(GameState):
                 asteroid.hp -= 3
                 if asteroid.hp <= 0:
                     self.score += 20
-                self.bullet_list.remove(bullet)
+                bullet.kill()
 
             # for each enemy hit, remove the bullet and add to the score
             for enemy in enemy_hit_list:
 
                 if not enemy.hit:
-                    self.bullet_list.remove(bullet)
+                    bullet.kill()
                     self.score += (1 * multiplier)
                     self.streak += 1
                     enemy.explode()
 
              # remove the bullet if it flies up off the screen
             if bullet.rect.y < -50:
-                self.bullet_list.remove(bullet)
                 self.streak = 0
                 self.misses += 1
 
@@ -222,9 +176,8 @@ class Level1(GameState):
             if self.phase == 0:
                 self.phase = 1
                 # boss1 = Boss((-30, -30))
-                boss2 = Boss((445, -30))
-                boss3 = Boss((200, -30))
-                self.boss_list.add(boss2, boss3)
+                boss2 = Boss((445, -30), self.boss_list)
+                boss3 = Boss((200, -30), self.boss_list)
                 return
 
             print('winner', self.shots_fired, self.score, total_score)
@@ -237,7 +190,7 @@ class Level1(GameState):
             if perfect:
                 message_display('PERFECT!! YOU WIN!! score: {}'
                     .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
-            elif self.ammo == 0:
+            elif self.player.weapon.ammo == 0:
                 message_display('CLOSE ONE, YOU WIN!! score: {}'
                     .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
             else:
@@ -248,20 +201,20 @@ class Level1(GameState):
     def update(self, dt):
         multiplier = int(self.streak/2) or 1
         total_score = int(self.score * 100) or 0
-        self.hud_ammo.prop = self.ammo
+        self.hud_ammo.prop = self.player.weapon.ammo
         self.hud_score.prop = total_score
         self.hud_multiplier.prop = multiplier
 
         # call the update method on all the sprites
         self.player.update(dt)
-        self.bullet_list.update(dt)
+        self.player.weapon.bullets.update(dt)
         self.boss_list.update(dt, self.player.rect.center)
         self.enemy_list.update(dt, self.player.rect.center)
         self.asteroid_list.update()
         self.hud_items.update()
 
         self.player_collisions()
-        self.bullet_mechanics(multiplier, total_score)
+        self.bullet_mechanics(multiplier)
         self.check_game_over(total_score)
 
     def draw(self, surface):
@@ -272,5 +225,5 @@ class Level1(GameState):
         self.asteroid_list.draw(surface)
         self.enemy_list.draw(surface)
         self.boss_list.draw(surface)
-        self.bullet_list.draw(surface)
+        self.player.weapon.bullets.draw(surface)
         self.player.draw(surface)
