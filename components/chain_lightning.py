@@ -9,11 +9,10 @@ WOBBLE = pygame.image.load('assets/wobble.png')
 class Chain_Lightning(Entity):
     """Bullet type class that will jump from enemy to enemy"""
 
-    def __init__(self, pos):
-        super().__init__(WOBBLE, (580, 1500, 120), pos)
+    def __init__(self, pos, *groups):
+        super().__init__(WOBBLE, (580, 1500, 120), pos, groups)
         self.next_target = None
         self.enemy_list = None
-
 
     def find_next_target(self, enemy_list):
         """Find next available target"""

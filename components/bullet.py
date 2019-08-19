@@ -8,8 +8,8 @@ LAZER = (0, 255, 43)
 class Bullet(Entity):
     """ represents Projectiles """
 
-    def __init__(self, pos):
-        super().__init__(pygame.Surface([4, 10], pygame.SRCALPHA), (2000, 100, 120), pos)
+    def __init__(self, pos, *groups):
+        super().__init__(pygame.Surface([4, 10], pygame.SRCALPHA), (2000, 100, 120), pos, groups)
         self.m_pos = pygame.mouse.get_pos()
         self.pos = vec(pos)
         des = self.pos - self.m_pos
@@ -24,4 +24,8 @@ class Bullet(Entity):
 
     def update(self, dt):
         """ move the bullet """
+
         super().update(dt)
+
+        if self.rect.y < -50:
+            self.kill()

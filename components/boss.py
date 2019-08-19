@@ -13,8 +13,8 @@ DESTRO_ENEMY = pygame.image.load('assets/destro_enemy.png')
 class Boss(Entity):
     """Boss entity"""
 
-    def __init__(self, s_pos=(-30, -30)):
-        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (60, 60)), (200, 200, 120), s_pos)
+    def __init__(self, s_pos=(-30, -30), *groups):
+        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (60, 60)), (200, 200, 120), s_pos, groups)
         self.hp = 600
         self.is_in_attack_mode = False
         self.attack_duration = 5000

@@ -10,8 +10,10 @@ FLEE_DISTANCE = 400
 class Entity(pygame.sprite.Sprite):
     """The base class for any on screen object with movement"""
 
-    def __init__(self, img, movement_options=(200, 100, 120), starting_pos=(100, 100)):
+    def __init__(self, img, movement_options=(200, 100, 120), starting_pos=(100, 100), *groups):
         super().__init__()
+        for g in groups:
+            self.add(g)
         self.image = img
         self.rect = self.image.get_rect()
         self.max_speed = movement_options[0]
@@ -21,6 +23,15 @@ class Entity(pygame.sprite.Sprite):
         self.vel = vec(0, 0).rotate(uniform(0, 360))
         self.rect.center = self.pos
         self.acc = vec(0, 0)
+
+    def rot_center(self, image, angle):
+        """rotate an image while keeping its center and size"""
+        orig_rect = image.get_rect()
+        rot_image = pygame.transform.rotate(image, angle)
+        rot_rect = orig_rect.copy()
+        rot_rect.center = rot_image.get_rect().center
+        rot_image = rot_image.subsurface(rot_rect).copy()
+        return rot_image
 
     def flee(self, target):
         steer = vec(0, 0)
