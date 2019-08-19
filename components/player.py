@@ -3,6 +3,7 @@ import math
 from components.weapon import Weapon
 from components.bullet import Bullet
 from components.entity import Entity
+from components.chain_lightning import Chain_Lightning
 
 HEIGHT = 400
 WIDTH = 700
@@ -22,14 +23,48 @@ class Player(Entity):
         self.pos = (WIDTH / 2, HEIGHT - 40)
         self.direction = 'stop'
 
-    def rot_center(self, image, angle):
-        """rotate an image while keeping its center and size"""
-        orig_rect = image.get_rect()
-        rot_image = pygame.transform.rotate(image, angle)
-        rot_rect = orig_rect.copy()
-        rot_rect.center = rot_image.get_rect().center
-        rot_image = rot_image.subsurface(rot_rect).copy()
-        return rot_image
+    def get_event(self, event, **state):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            can_fire = self.weapon.ammo > 0
+            if can_fire and event.button == 1:
+                self.weapon.begin_fire(self.rect.center)
+                state['shots_fired'] += 1
+
+            elif can_fire and event.button == 3:
+                for i in range(3):
+                    bullet = Chain_Lightning(self.rect.center, self.weapon.bullets)
+                    bullet.find_next_target(state['enemy_list'].sprites() + state['boss_list'].sprites())
+                    state['shots_fired'] += 1
+                    self.weapon.ammo -= 1
+
+            elif event.button == 2:
+                self.weapon.ammo += 30
+
+            elif not can_fire:
+                print('you loose')
+                pygame.mixer.music.fadeout(1000)
+                # message_display('YOU LOOSE OUT OF AMMO!!!', WHITE, pygame.display.get_surface(), (700, 400))
+
+                self.done = True
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                self.weapon.cease_fire()
+
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_a:
+                self.move('left')
+
+            if event.key == pygame.K_d:
+                self.move('right')
+
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                self.move('stop')
+
+            if event.key == pygame.K_d:
+                self.move('stop')
+
 
     def draw(self, screen):
         """ draw player specifically """
