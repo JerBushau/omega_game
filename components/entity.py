@@ -71,10 +71,10 @@ class Entity(pygame.sprite.Sprite):
         if self.vel.length() > self.max_speed:
             self.vel.scale_to_length(self.max_speed)
         self.pos += self.vel * delta_time + 0.5 * self.acc * delta_time**2
-        if self.pos.x > WIDTH:
-            self.pos.x = 0
-        elif self.pos.x < 0:
-            self.pos.x = WIDTH
+        if self.pos.x > WIDTH + 20:
+            self.pos.x = -20
+        elif self.pos.x < -20:
+            self.pos.x = WIDTH + 20
         if self.pos.y > HEIGHT + 70:
             self.pos.y = HEIGHT + 70
         elif self.pos.y < -70:

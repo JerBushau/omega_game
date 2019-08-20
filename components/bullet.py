@@ -27,5 +27,9 @@ class Bullet(Entity):
 
         super().update(dt)
 
-        if self.rect.y < -50:
+        if (self.rect.y <= -50
+            or self.rect.y >= 450
+            or self.rect.x <= 0
+            or self.rect.x >= 700):
             self.kill()
+
