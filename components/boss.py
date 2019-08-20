@@ -2,20 +2,28 @@ import pygame
 from random import randint, uniform, choice
 from components.entity import Entity
 from timer import Timer
+from components.weapon import Weapon
+from components.bullet import Bullet
+from sprite_sheet_loader import sprite_sheet
+
 vec = pygame.math.Vector2
 
 WIDTH = 700
 HEIGHT = 400
 
-ENEMY = pygame.image.load('assets/enemy.png')
-DESTRO_ENEMY = pygame.image.load('assets/destro_enemy.png')
+ENEMY = pygame.image.load('assets/space-hedgehog.png')
+DESTRO_ENEMY = pygame.image.load('assets/space-hedgehog.png')
 
 class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (60, 60)), (200, 200, 120), s_pos, groups)
+        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (80, 80)), (200, 200, 120), s_pos, groups)
         self.hp = 600
+        self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
+        self.sprite_animation = Timer(150)
+        self.current_sprite_index = 0
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
         self.is_in_attack_mode = False
         self.attack_duration = 5000
         self.attack_timer = Timer(self.attack_duration)
@@ -23,6 +31,9 @@ class Boss(Entity):
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
         self.return_point = choice([(500, 100), (50, 200), (350, 100)])
+        self.weapon = Weapon(Bullet)
+
+        self.sprite_animation.start_repeating()
 
     def explode(self):
         """ mark enemy as hit """
@@ -31,7 +42,7 @@ class Boss(Entity):
         self.max_speed = 75
         self.destruction_sound.play()
         self.death_animation_timer.start()
-        self.image = pygame.transform.scale(DESTRO_ENEMY.convert_alpha(), (60, 60))
+        # self.image = pygame.transform.scale(DESTRO_ENEMY.convert_alpha(), (60, 60))
 
 
     def death_animation(self):
@@ -44,6 +55,17 @@ class Boss(Entity):
 
 
     def update(self, dt, target):
+        cap = 4
+        if self.hit:
+            self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
+            self.sprite_animation.set_duration(450)
+            cap = 12
+        if self.sprite_animation.is_finished() and self.current_sprite_index < cap:
+            self.current_sprite_index+=1
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
+            if self.current_sprite_index == cap:
+                self.current_sprite_index = 0
+        
 
         if not self.attack_timer.is_active:
             self.attack_timer.start()
