@@ -1,9 +1,9 @@
 import pygame
-import math
 from components.weapon import Weapon
 from components.bullet import Bullet
 from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
+from helpers import angle_from_vec
 
 HEIGHT = 400
 WIDTH = 700
@@ -70,9 +70,8 @@ class Player(Entity):
         """ draw player specifically """
         mouse_pos = pygame.mouse.get_pos()
         des = self.pos - vec(mouse_pos)
-        angle = math.atan2(des.x, des.y)
-        angle%=2*math.pi
-        img = self.rot_center(self.image, math.degrees(angle))
+        angle = angle_from_vec(des)
+        img = self.rot_center(self.image, angle)
         rect = img.get_rect()
         rect.center = self.rect.center
 

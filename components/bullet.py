@@ -1,6 +1,6 @@
 import pygame
-import math
 from components.entity import Entity
+from helpers import angle_from_vec
 vec = pygame.math.Vector2
 
 LAZER = (0, 255, 43)
@@ -12,12 +12,10 @@ class Bullet(Entity):
         super().__init__(pygame.Surface([4, 10], pygame.SRCALPHA), (2000, 100, 120), pos, groups)
         self.m_pos = pygame.mouse.get_pos()
         self.pos = vec(pos)
-        des = self.pos - self.m_pos
-        angle = math.atan2(des.x, des.y)
-        angle %= 2*math.pi
+        desired_vec = self.pos - self.m_pos
         self.sound = pygame.mixer.Sound('assets/sounds/ship_lazer.ogg')
         self.image.fill(LAZER)
-        self.image = pygame.transform.rotate(self.image, math.degrees(angle))
+        self.image = pygame.transform.rotate(self.image, angle_from_vec(desired_vec))
         self.acc = (self.m_pos - self.pos).normalize() * self.max_speed
 
         self.sound.play()
@@ -32,4 +30,6 @@ class Bullet(Entity):
             or self.rect.x <= 0
             or self.rect.x >= 700):
             self.kill()
+
+
 
