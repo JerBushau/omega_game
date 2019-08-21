@@ -15,12 +15,11 @@ PLAYER = pygame.image.load('assets/ship.png')
 class Player(Entity):
     """ represents the Player. """
 
-    def __init__(self):
-        super().__init__(PLAYER, (200, 800, 120))
+    def __init__(self, *groups):
+        super().__init__(PLAYER, (200, 800, 120), (WIDTH / 2, HEIGHT - 40), groups)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.weapon = Weapon(Bullet)
-        self.pos = (WIDTH / 2, HEIGHT - 40)
         self.direction = 'stop'
 
     def get_event(self, event, **state):
@@ -71,8 +70,7 @@ class Player(Entity):
         mouse_pos = pygame.mouse.get_pos()
         des = self.pos - vec(mouse_pos)
         angle = angle_from_vec(des)
-        img = self.rot_center(self.image, angle)
-        rect = img.get_rect()
+        img, rect = self.rot_center(self.image, self.rect, angle)
         rect.center = self.rect.center
 
         # rect.clamp_ip(screen.get_rect())

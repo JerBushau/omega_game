@@ -4,6 +4,7 @@ from components.entity import Entity
 from timer import Timer
 from components.weapon import Weapon
 from components.bullet import Bullet
+from components.energy_blast import EnergyBlast
 from sprite_sheet_loader import sprite_sheet
 
 vec = pygame.math.Vector2
@@ -11,17 +12,16 @@ vec = pygame.math.Vector2
 WIDTH = 700
 HEIGHT = 400
 
-ENEMY = pygame.image.load('assets/space-hedgehog.png')
-DESTRO_ENEMY = pygame.image.load('assets/space-hedgehog.png')
+HEDGEHOG = pygame.image.load('assets/space-hedgehog.png')
 
 class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (80, 80)), (200, 200, 120), s_pos, groups)
-        self.hp = 600
+        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (200, 300, 120), s_pos, groups)
+        self.hp = 1200
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
-        self.sprite_animation = Timer(120)
+        self.sprite_animation_timer = Timer(120)
         self.current_sprite_index = 0
         self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
         self.is_in_attack_mode = False
@@ -31,9 +31,10 @@ class Boss(Entity):
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
         self.return_point = choice([(500, 100), (50, 200), (350, 100)])
-        self.weapon = Weapon(Bullet)
+        self.energy_blast_timer = Timer(1000)
+        self.bullets = pygame.sprite.Group()
 
-        self.sprite_animation.start_repeating()
+        self.sprite_animation_timer.start_repeating()
 
     def explode(self):
         """ mark enemy as hit """
@@ -44,7 +45,12 @@ class Boss(Entity):
         self.death_animation_timer.start()
 
 
-    def death_animation(self):
+    def start_energy_blast(self):
+        print('started')
+        self.energy_blast_timer.start()
+
+
+    def death_movement(self):
         """Enemy movement once marked as hit"""
 
         if self.death_animation_timer.is_finished():
@@ -53,28 +59,37 @@ class Boss(Entity):
             self.acc = self.seek((self.pos.x, HEIGHT + 40))
 
 
-    def basic_animation(self):
+    def sprite_animation(self):
         cap = 4
         if self.hit:
             self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
-            self.sprite_animation.set_duration(250)
+            self.sprite_animation_timer.set_duration(275)
             cap = 12
-        if self.sprite_animation.is_finished() and self.current_sprite_index < cap:
+        if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index+=1
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
             if self.current_sprite_index == cap:
                 if cap == 12:
-                    self.current_sprite_index = cap
+                    self.current_sprite_index = 9
                 else:
                     self.current_sprite_index = 0
 
 
     def update(self, dt, target):
-        self.basic_animation()
+        self.sprite_animation()
+        self.bullets.update(dt)
+        distance_from_return_point = self.pos - self.return_point;
 
+        if (distance_from_return_point.length() < 20
+            and not self.energy_blast_timer.is_active):
+            self.start_energy_blast()
 
-        if not self.attack_timer.is_active:
-            self.attack_timer.start()
+        if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 50:
+            print('blast!')
+            EnergyBlast(self.rect.center, target, self.bullets)
+            self.is_in_attack_mode = True
+            if not self.attack_timer.is_active:
+                self.attack_timer.start()
 
         if self.is_in_attack_mode == True:
             self.attack_timer.set_duration(self.attack_duration / 1.8)
@@ -82,7 +97,7 @@ class Boss(Entity):
             self.attack_timer.set_duration(self.attack_duration)
 
         if self.attack_timer.is_finished():
-            self.is_in_attack_mode = not self.is_in_attack_mode
+            self.is_in_attack_mode = False
             self.return_point = choice([(600, 100), (100, 200), (350, 90)])
 
         if self.is_in_attack_mode == False:
@@ -93,5 +108,5 @@ class Boss(Entity):
         self.acc = self.seek_with_approach(actual_target)
 
         if self.death_animation_timer.is_active and self.hit:
-            self.death_animation()
+            self.death_movement()
         super().update(dt)

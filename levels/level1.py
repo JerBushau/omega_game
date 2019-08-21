@@ -61,7 +61,8 @@ class Level1(GameState):
         self.asteroid_list = Asteroid_group()
         self.boss_list = pygame.sprite.Group()
         self.hud_items = pygame.sprite.Group()
-        self.player = Player()
+        self.player_list = pygame.sprite.Group()
+        self.player = Player(self.player_list)
 
         for i in range(self.num_of_enemies):
             Enemy(self.enemy_list)
@@ -94,6 +95,18 @@ class Level1(GameState):
 
         self.player.weapon.fire(self.player.rect.center)
         self.shots_fired += 1
+
+        for boss in self.boss_list:
+            for bullet in boss.bullets:
+                enemy_bullet_player_hit_list = pygame.sprite.spritecollide(
+                    bullet, self.player_list, False, pygame.sprite.collide_mask)
+
+
+                if enemy_bullet_player_hit_list:
+                    message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
+
+                    self.done = True
+
 
         for bullet in self.player.weapon.bullets:
 
@@ -176,8 +189,8 @@ class Level1(GameState):
             if self.phase == 0:
                 self.phase = 1
                 # boss1 = Boss((-30, -30))
-                boss2 = Boss((445, -30), self.boss_list)
-                boss3 = Boss((200, -30), self.boss_list)
+                # boss2 = Boss((445, -50), self.boss_list)
+                boss3 = Boss((200, -50), self.boss_list)
                 return
 
             print('winner', self.shots_fired, self.score, total_score)
@@ -208,6 +221,8 @@ class Level1(GameState):
         # call the update method on all the sprites
         self.player.update(dt)
         self.player.weapon.bullets.update(dt)
+        for boss in self.boss_list:
+            boss.bullets.update(dt)
         self.boss_list.update(dt, self.player.rect.center)
         self.enemy_list.update(dt, self.player.rect.center)
         self.asteroid_list.update()
@@ -225,5 +240,7 @@ class Level1(GameState):
         self.asteroid_list.draw(surface)
         self.enemy_list.draw(surface)
         self.boss_list.draw(surface)
+        for boss in self.boss_list:
+            boss.bullets.draw(surface)
         self.player.weapon.bullets.draw(surface)
         self.player.draw(surface)

@@ -24,14 +24,11 @@ class Entity(pygame.sprite.Sprite):
         self.rect.center = self.pos
         self.acc = vec(0, 0)
 
-    def rot_center(self, image, angle):
-        """rotate an image while keeping its center and size"""
-        orig_rect = image.get_rect()
+    def rot_center(self, image, rect, angle):
+        """rotate an image while keeping its center"""
         rot_image = pygame.transform.rotate(image, angle)
-        rot_rect = orig_rect.copy()
-        rot_rect.center = rot_image.get_rect().center
-        rot_image = rot_image.subsurface(rot_rect).copy()
-        return rot_image
+        rot_rect = rot_image.get_rect(center=rect.center)
+        return rot_image,rot_rect
 
     def flee(self, target):
         steer = vec(0, 0)
