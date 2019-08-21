@@ -51,7 +51,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 2
+        self.num_of_enemies = 15
         self.score = 0
         self.shots_fired = 0
         self.streak = 1

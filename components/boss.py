@@ -18,8 +18,8 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (200, 300, 120), s_pos, groups)
-        self.hp = 1200
+        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (105, 600, 120), s_pos, groups)
+        self.hp = 2200
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
         self.sprite_animation_timer = Timer(120)
         self.current_sprite_index = 0
@@ -30,8 +30,10 @@ class Boss(Entity):
         self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
-        self.return_point = choice([(500, 100), (50, 200), (350, 100)])
-        self.energy_blast_timer = Timer(1000)
+        self.possible_points = [(350, 100), (50, 80), (350, 100), (500, 100)]
+        self.point = 0
+        self.return_point = self.possible_points[self.point]
+        self.energy_blast_timer = Timer(100)
         self.bullets = pygame.sprite.Group()
 
         self.sprite_animation_timer.start_repeating()
@@ -80,11 +82,11 @@ class Boss(Entity):
         self.bullets.update(dt)
         distance_from_return_point = self.pos - self.return_point;
 
-        if (distance_from_return_point.length() < 20
+        if (distance_from_return_point.length() < 40
             and not self.energy_blast_timer.is_active):
             self.start_energy_blast()
-
-        if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 50:
+        print(distance_from_return_point.length())
+        if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
             print('blast!')
             EnergyBlast(self.rect.center, target, self.bullets)
             self.is_in_attack_mode = True
@@ -98,12 +100,12 @@ class Boss(Entity):
 
         if self.attack_timer.is_finished():
             self.is_in_attack_mode = False
-            self.return_point = choice([(600, 100), (100, 200), (350, 90)])
+            self.point += 1
+            if self.point == 4:
+                self.point = 0
+            self.return_point = self.possible_points[self.point]
 
-        if self.is_in_attack_mode == False:
-            actual_target = self.return_point
-        else:
-            actual_target = target
+        actual_target = self.return_point
 
         self.acc = self.seek_with_approach(actual_target)
 

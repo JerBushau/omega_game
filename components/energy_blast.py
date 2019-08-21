@@ -25,13 +25,19 @@ class EnergyBlast(Entity):
         cap = 4
         if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index += 1
-            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (50, 50))
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (40, 40))
+            self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect()
             if self.current_sprite_index == cap:
                 self.current_sprite_index = 0
 
     def update(self, dt):
-        super().update(dt)
         self.sprite_animation()
+        super().update(dt)
 
+        if (self.rect.y <= -50
+            or self.rect.y >= 450
+            or self.rect.x <= 0
+            or self.rect.x >= 700):
+            self.kill()
 
