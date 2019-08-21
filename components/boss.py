@@ -21,7 +21,7 @@ class Boss(Entity):
         super().__init__(pygame.transform.scale(ENEMY.convert_alpha(), (80, 80)), (200, 200, 120), s_pos, groups)
         self.hp = 600
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
-        self.sprite_animation = Timer(150)
+        self.sprite_animation = Timer(120)
         self.current_sprite_index = 0
         self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
         self.is_in_attack_mode = False
@@ -42,7 +42,6 @@ class Boss(Entity):
         self.max_speed = 75
         self.destruction_sound.play()
         self.death_animation_timer.start()
-        # self.image = pygame.transform.scale(DESTRO_ENEMY.convert_alpha(), (60, 60))
 
 
     def death_animation(self):
@@ -54,18 +53,25 @@ class Boss(Entity):
             self.acc = self.seek((self.pos.x, HEIGHT + 40))
 
 
-    def update(self, dt, target):
+    def basic_animation(self):
         cap = 4
         if self.hit:
             self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
-            self.sprite_animation.set_duration(450)
+            self.sprite_animation.set_duration(250)
             cap = 12
         if self.sprite_animation.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index+=1
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
             if self.current_sprite_index == cap:
-                self.current_sprite_index = 0
-        
+                if cap == 12:
+                    self.current_sprite_index = cap
+                else:
+                    self.current_sprite_index = 0
+
+
+    def update(self, dt, target):
+        self.basic_animation()
+
 
         if not self.attack_timer.is_active:
             self.attack_timer.start()
