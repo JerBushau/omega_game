@@ -7,10 +7,10 @@ WOBBLE = pygame.image.load('assets/wobble.png')
 E_B = 'assets/hedgehog-proj.png'
 
 class EnergyBlast(Entity):
-
     def __init__(self, pos, target, *groups):
-        super().__init__(WOBBLE, (100, 100, 120), pos, groups)
-        self.sheet = sprite_sheet((32, 32), E_B)
+        SHEET = sprite_sheet((32, 32), E_B)
+        super().__init__(SHEET[0], (100, 100, 120), pos, groups)
+        self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0
         # self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (50, 50))

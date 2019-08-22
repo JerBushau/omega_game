@@ -19,7 +19,7 @@ class Boss(Entity):
 
     def __init__(self, s_pos=(-30, -30), *groups):
         super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (105, 400, 120), s_pos, groups)
-        self.hp = 2200
+        self.hp = 600
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
         self.sprite_animation_timer = Timer(120)
         self.current_sprite_index = 0
@@ -30,7 +30,7 @@ class Boss(Entity):
         self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
-        self.possible_points = [(350, 100), (50, 80), (350, 100), (500, 100)]
+        self.possible_points = [(350, 70), (200, 80), (350, 100), (500, 70)]
         self.point = 0
         self.return_point = self.possible_points[self.point]
         self.energy_blast_timer = Timer(100)
@@ -85,7 +85,7 @@ class Boss(Entity):
         if (distance_from_return_point.length() < 40
             and not self.energy_blast_timer.is_active):
             self.start_energy_blast()
-            
+
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
             print('blast!')
             EnergyBlast(self.rect.center, target, self.bullets)

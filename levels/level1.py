@@ -51,7 +51,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 15
+        self.num_of_enemies = 1
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -122,7 +122,7 @@ class Level1(GameState):
                 bullet, self.boss_list, False)
 
             for boss in boss_hit_list:
-                boss.hp -= 15
+                boss.hp -= 5
                 bullet.kill()
 
                 if boss.hp <= 0:
