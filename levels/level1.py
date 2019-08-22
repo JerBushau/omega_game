@@ -103,6 +103,7 @@ class Level1(GameState):
 
 
                 if enemy_bullet_player_hit_list:
+                    pygame.mixer.music.fadeout(1000)
                     message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
 
                     self.done = True
@@ -123,6 +124,7 @@ class Level1(GameState):
 
             for boss in boss_hit_list:
                 boss.hp -= 5
+                boss.collision_detected()
                 bullet.kill()
 
                 if boss.hp <= 0:

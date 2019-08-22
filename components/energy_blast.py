@@ -9,7 +9,7 @@ E_B = 'assets/hedgehog-proj.png'
 class EnergyBlast(Entity):
     def __init__(self, pos, target, *groups):
         SHEET = sprite_sheet((32, 32), E_B)
-        super().__init__(SHEET[0], (100, 100, 120), pos, groups)
+        super().__init__(SHEET[0], (250, 100, 120), pos, groups)
         self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0

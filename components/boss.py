@@ -35,8 +35,14 @@ class Boss(Entity):
         self.return_point = self.possible_points[self.point]
         self.energy_blast_timer = Timer(100)
         self.bullets = pygame.sprite.Group()
+        self.hit_timer = Timer(175)
+        self.is_tinted = False
 
         self.sprite_animation_timer.start_repeating()
+
+    def collision_detected(self):
+        self.is_tinted = True
+        self.hit_timer.start()
 
     def explode(self):
         """ mark enemy as hit """
@@ -46,11 +52,8 @@ class Boss(Entity):
         self.destruction_sound.play()
         self.death_animation_timer.start()
 
-
     def start_energy_blast(self):
-        print('started')
         self.energy_blast_timer.start()
-
 
     def death_movement(self):
         """Enemy movement once marked as hit"""
@@ -59,7 +62,6 @@ class Boss(Entity):
             self.kill()
         else:
             self.acc = self.seek((self.pos.x, HEIGHT + 40))
-
 
     def sprite_animation(self):
         cap = 4
@@ -70,24 +72,28 @@ class Boss(Entity):
         if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index+=1
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
+            if self.is_tinted:
+                self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_MAX)
             if self.current_sprite_index == cap:
                 if cap == 12:
                     self.current_sprite_index = 9
                 else:
                     self.current_sprite_index = 0
 
-
     def update(self, dt, target):
         self.sprite_animation()
         self.bullets.update(dt)
         distance_from_return_point = self.pos - self.return_point;
+
+
+        if self.hit_timer.is_finished():
+            self.is_tinted = False
 
         if (distance_from_return_point.length() < 40
             and not self.energy_blast_timer.is_active):
             self.start_energy_blast()
 
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
-            print('blast!')
             EnergyBlast(self.rect.center, target, self.bullets)
             self.is_in_attack_mode = True
             if not self.attack_timer.is_active:
