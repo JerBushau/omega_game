@@ -18,7 +18,7 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (105, 600, 120), s_pos, groups)
+        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (105, 400, 120), s_pos, groups)
         self.hp = 2200
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
         self.sprite_animation_timer = Timer(120)
@@ -85,7 +85,7 @@ class Boss(Entity):
         if (distance_from_return_point.length() < 40
             and not self.energy_blast_timer.is_active):
             self.start_energy_blast()
-        print(distance_from_return_point.length())
+            
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
             print('blast!')
             EnergyBlast(self.rect.center, target, self.bullets)
