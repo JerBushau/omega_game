@@ -73,7 +73,7 @@ class Boss(Entity):
             self.current_sprite_index+=1
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
             if self.is_tinted:
-                self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_MAX)
+                self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_ADD)
             if self.current_sprite_index == cap:
                 if cap == 12:
                     self.current_sprite_index = 9

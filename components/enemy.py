@@ -21,7 +21,7 @@ class Enemy(Entity):
         self.hit = False
         self.attacking = False
         self.death_animation_timer = Timer(1100)
-        self.attack_timing = random.randrange(2000, 12000)
+        self.attack_timing = random.randrange(2000, 6000)
         self.attack_timer = Timer(self.attack_timing)
 
 

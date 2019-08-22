@@ -26,15 +26,22 @@ class Chain_Lightning(Entity):
 
     def update(self, dt):
         """ update movement and state """
+        m_pos = pygame.mouse.get_pos()
+
         if self.next_target != None:
             self.acc = self.seek(self.next_target.pos)
 
-            if self.next_target.hit or not self.next_target.alive:
+            if self.next_target.hit:
                 self.find_next_target(self.enemy_list)
-                self.acc = self.seek(self.next_target.pos)
+                if len(self.next_target.groups()) == 0:
+                    self.acc = self.seek(m_pos)
+                else:
+                    self.acc = self.seek(self.next_target.pos)
         else:
             self.find_next_target(self.enemy_list)
             if self.next_target != None:
                 self.acc = self.seek(self.next_target.pos)
+            else:
+                self.acc = self.seek(m_pos)
 
         super().update(dt)

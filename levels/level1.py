@@ -8,6 +8,7 @@ from components.hud import Hud
 from components.wobble import Wobble_shot
 from components.asteroid import Asteroid, Asteroid_group
 from components.chain_lightning import Chain_Lightning
+from components.crosshair import Crosshair
 from score import scores
 from gamestate import GameState
 
@@ -48,10 +49,11 @@ class Level1(GameState):
         pygame.mixer.music.load('assets/music/Omega.ogg')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
+        pygame.mouse.set_visible(False)
 
         self.phase = 0
 
-        self.num_of_enemies = 1
+        self.num_of_enemies = 25
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -64,15 +66,15 @@ class Level1(GameState):
         self.player_list = pygame.sprite.Group()
         self.player = Player(self.player_list)
 
-        for i in range(self.num_of_enemies):
-            Enemy(self.enemy_list)
-
+        self.crosshair = Crosshair()
         self.hud_score = Hud(570, 350, 120, 40, 'SCORE')
         self.hud_ammo = Hud(570, 300, 120, 40, 'AMMO')
         self.hud_multiplier = Hud(510, 350, 50, 40, '', 'x', True)
         self.hud_items.add(self.hud_score)
         self.hud_items.add(self.hud_ammo)
         self.hud_items.add(self.hud_multiplier)
+
+        self.wave1()
 
         super().startup(persistent)
 
@@ -213,6 +215,10 @@ class Level1(GameState):
                     .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
             self.done = True
 
+    def wave1(self):
+        for i in range(self.num_of_enemies):
+            Enemy(self.enemy_list)
+
     def update(self, dt):
         multiplier = int(self.streak/2) or 1
         total_score = int(self.score * 100) or 0
@@ -222,6 +228,7 @@ class Level1(GameState):
 
         # call the update method on all the sprites
         self.player.update(dt)
+        self.crosshair.update()
         self.player.weapon.bullets.update(dt)
         for boss in self.boss_list:
             boss.bullets.update(dt)
@@ -245,4 +252,5 @@ class Level1(GameState):
         for boss in self.boss_list:
             boss.bullets.draw(surface)
         self.player.weapon.bullets.draw(surface)
+        self.crosshair.draw(surface)
         self.player.draw(surface)
