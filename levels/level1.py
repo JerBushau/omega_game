@@ -11,11 +11,14 @@ from components.chain_lightning import Chain_Lightning
 from components.crosshair import Crosshair
 from score import scores
 from gamestate import GameState
+import parallax
 
+BACKGROUND = 'assets/background1.png'
+BL0 = 'assets/000.png'
+BL1 = 'assets/001.png'
+BL2 = 'assets/002.png'
 
-BACKGROUND = 'assets/background.png'
 WHITE = (255, 255, 255)
-
 
 # these functions should be moved to a class
 def text_objects(text, font, color):
@@ -42,7 +45,6 @@ class Level1(GameState):
     def __init__(self):
         super().__init__()
         self.scores = scores
-        self.background = Background(BACKGROUND, [0,0])
         self.next_state = 'START'
 
     def startup(self, persistent):
@@ -50,6 +52,13 @@ class Level1(GameState):
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
         pygame.mouse.set_visible(False)
+
+        bg = parallax.ParallaxSurface((1400, 400), pygame.RLEACCEL)
+        bg.add(BL2, 10)
+        bg.add(BL1, -4)
+        bg.add(BL0, 4)
+
+        self.background = bg
 
         self.phase = 0
 
@@ -237,14 +246,20 @@ class Level1(GameState):
         self.asteroid_list.update()
         self.hud_items.update()
 
-        self.player_collisions()
+        # self.player_collisions()
         self.bullet_mechanics(multiplier)
         self.check_game_over(total_score)
 
     def draw(self, surface):
         surface.fill(WHITE)
-        surface.blit(self.background.image, self.background.rect)
+        # surface.blit(self.background.image, self.background.rect)
+        direction = -1 if self.player.vel[0] < 0 else 1
+        print(self.player.vel[0], self.player.acc[0])
 
+        self.background.scroll(self.player.vel[0]/6)
+
+
+        self.background.draw(surface)
         self.hud_items.draw(surface)
         self.asteroid_list.draw(surface)
         self.enemy_list.draw(surface)
