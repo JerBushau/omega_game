@@ -17,6 +17,7 @@ BACKGROUND = 'assets/background1.png'
 BL0 = 'assets/000.png'
 BL1 = 'assets/001.png'
 BL2 = 'assets/002.png'
+BL3 = 'assets/003.png'
 
 WHITE = (255, 255, 255)
 
@@ -54,9 +55,10 @@ class Level1(GameState):
         pygame.mouse.set_visible(False)
 
         bg = parallax.ParallaxSurface((1400, 400), pygame.RLEACCEL)
-        bg.add(BL2, 8)
-        bg.add(BL1, 4)
-        bg.add(BL0, 3)
+        bg.add(BL3, 8)
+        bg.add(BL2, 6)
+        bg.add(BL1, 3)
+        bg.add(BL0, 2)
 
         self.background = bg
 
@@ -256,7 +258,7 @@ class Level1(GameState):
         direction = -1 if self.player.vel[0] < 0 else 1
         print(self.player.vel[0], self.player.acc[0])
 
-        self.background.scroll(self.player.vel[0]/13)
+        self.background.scroll(self.player.vel[0]/28)
 
 
         self.background.draw(surface)
