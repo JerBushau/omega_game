@@ -54,15 +54,15 @@ class Level1(GameState):
         pygame.mouse.set_visible(False)
 
         bg = parallax.ParallaxSurface((1400, 400), pygame.RLEACCEL)
-        bg.add(BL2, 10)
-        bg.add(BL1, -4)
-        bg.add(BL0, 4)
+        bg.add(BL2, 8)
+        bg.add(BL1, 4)
+        bg.add(BL0, 3)
 
         self.background = bg
 
         self.phase = 0
 
-        self.num_of_enemies = 25
+        self.num_of_enemies = 15
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -246,7 +246,7 @@ class Level1(GameState):
         self.asteroid_list.update()
         self.hud_items.update()
 
-        # self.player_collisions()
+        self.player_collisions()
         self.bullet_mechanics(multiplier)
         self.check_game_over(total_score)
 
@@ -256,7 +256,7 @@ class Level1(GameState):
         direction = -1 if self.player.vel[0] < 0 else 1
         print(self.player.vel[0], self.player.acc[0])
 
-        self.background.scroll(self.player.vel[0]/6)
+        self.background.scroll(self.player.vel[0]/13)
 
 
         self.background.draw(surface)
