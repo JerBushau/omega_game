@@ -64,7 +64,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 0
+        self.num_of_enemies = 1
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -203,10 +203,8 @@ class Level1(GameState):
         if not self.enemy_list and not self.boss_list:
             if self.phase == 0:
                 self.phase = 1
-                # boss1 = Boss((-30, -30))
-                # boss2 = Boss((445, -50), self.boss_list)
-                boss3 = Boss((200, -50), self.boss_list)
-                return
+                Boss((200, -70), self.boss_list)
+                return 
 
             print('winner', self.shots_fired, self.score, total_score)
             pygame.mixer.music.fadeout(1000)
@@ -237,6 +235,8 @@ class Level1(GameState):
         self.hud_score.prop = total_score
         self.hud_multiplier.prop = multiplier
 
+        self.check_game_over(total_score)
+
         # call the update method on all the sprites
         self.player.update(dt)
         self.crosshair.update()
@@ -248,16 +248,13 @@ class Level1(GameState):
         self.asteroid_list.update()
         self.hud_items.update()
 
-        # self.player_collisions()
+        self.player_collisions()
         self.bullet_mechanics(multiplier)
-        self.check_game_over(total_score)
 
     def draw(self, surface):
         surface.fill(WHITE)
         # surface.blit(self.background.image, self.background.rect)
-        direction = -1 if self.player.vel[0] < 0 else 1
-        print(self.player.vel[0], self.player.acc[0])
-
+        # direction = -1 if self.player.vel[0] < 0 else 1
         self.background.scroll(self.player.vel[0]/28)
 
 

@@ -18,12 +18,14 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (100, 117)), (105, 400, 120), s_pos, groups)
+        SHEET = sprite_sheet((100,117), 'assets/hedgehog_pwr_sheet.png')
+        super().__init__(pygame.transform.scale(SHEET[0], (200, 217)), (105, 400, 120), s_pos, groups)
         self.hp = 600
-        self.sheet = sprite_sheet((100,117), 'assets/hedgehog_sheet.png');
-        self.sprite_animation_timer = Timer(350)
+        self.sheet = SHEET;
+        self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0
-        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
+        self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.is_in_attack_mode = False
         self.attack_duration = 5000
@@ -62,30 +64,30 @@ class Boss(Entity):
         if self.death_animation_timer.is_finished():
             self.kill()
         else:
-            self.acc = self.seek((self.pos.x, HEIGHT + 40))
+            self.acc = self.seek((self.pos.x, HEIGHT + 71))
 
     def sprite_animation(self):
         cap = 4
-        # if self.hit:
-        #     self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
-        #     self.sprite_animation_timer.set_duration(275)
-        #     cap = 12
-        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+        if self.hit:
+            self.sheet = sprite_sheet((100, 117), 'assets/hedgehog_sheet.png')
+            self.sprite_animation_timer.set_duration(500)
+
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
         self.mask = pygame.mask.from_surface(self.image)
 
-        if self.is_tinted:
+        if self.is_tinted and not self.hit:
             self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_ADD)
 
-        if self.hit and self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
+        if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index+=1
-            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
             self.mask = pygame.mask.from_surface(self.image)
 
             if self.current_sprite_index == cap:
-                if cap == 12:
-                    self.current_sprite_index = 9
+                if self.hit:
+                    self.current_sprite_index = 4
                 else:
-                    self.current_sprite_index = cap
+                    self.current_sprite_index = 0
 
     def update(self, dt, target):
         self.sprite_animation()
