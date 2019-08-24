@@ -12,18 +12,18 @@ vec = pygame.math.Vector2
 WIDTH = 700
 HEIGHT = 400
 
-HEDGEHOG = pygame.image.load('assets/space-hedgehog.png')
+HEDGEHOG = pygame.image.load('assets/hedgehog.png')
 
 class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (80, 80)), (105, 400, 120), s_pos, groups)
+        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (95, 100)), (105, 400, 120), s_pos, groups)
         self.hp = 600
         self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
         self.sprite_animation_timer = Timer(120)
         self.current_sprite_index = 0
-        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
+        # self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
         self.is_in_attack_mode = False
         self.attack_duration = 5000
         self.attack_timer = Timer(self.attack_duration)
@@ -81,7 +81,7 @@ class Boss(Entity):
                     self.current_sprite_index = 0
 
     def update(self, dt, target):
-        self.sprite_animation()
+        # self.sprite_animation()
         self.bullets.update(dt)
         distance_from_return_point = self.pos - self.return_point;
 
