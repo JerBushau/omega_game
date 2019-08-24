@@ -105,8 +105,8 @@ class Level1(GameState):
 
     def bullet_mechanics(self, multiplier):
          # --- calculate mechanics for each bullet
-
-        self.player.weapon.fire(self.player.rect.center)
+        pos = (self.player.rect.center[0]-2, self.player.rect.center[1]+2)
+        self.player.weapon.fire(pos)
         self.shots_fired += 1
 
         for boss in self.boss_list:
@@ -204,7 +204,7 @@ class Level1(GameState):
             if self.phase == 0:
                 self.phase = 1
                 Boss((200, -70), self.boss_list)
-                return 
+                return
 
             print('winner', self.shots_fired, self.score, total_score)
             pygame.mixer.music.fadeout(1000)

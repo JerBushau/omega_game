@@ -10,13 +10,13 @@ WIDTH = 700
 
 vec = pygame.math.Vector2
 
-PLAYER = pygame.image.load('assets/ship.png')
+PLAYER = pygame.image.load('assets/ship1.png')
 
 class Player(Entity):
     """ represents the Player. """
 
     def __init__(self, *groups):
-        super().__init__(PLAYER, (200, 800, 120), (WIDTH / 2, HEIGHT - 40), groups)
+        super().__init__(pygame.transform.scale(PLAYER, (115, 115)), (200, 800, 120), (WIDTH / 2, HEIGHT - 50), groups)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.weapon = Weapon(Bullet)

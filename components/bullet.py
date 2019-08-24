@@ -9,7 +9,7 @@ class Bullet(Entity):
     """ represents Projectiles """
 
     def __init__(self, pos, *groups):
-        super().__init__(pygame.Surface([4, 10], pygame.SRCALPHA), (2000, 100, 120), pos, groups)
+        super().__init__(pygame.Surface([3, 10], pygame.SRCALPHA), (2000, 100, 120), pos, groups)
         self.m_pos = pygame.mouse.get_pos()
         self.sound = pygame.mixer.Sound('assets/sounds/ship_lazer.ogg')
         self.image.fill(LAZER)
