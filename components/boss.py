@@ -18,12 +18,13 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (95, 100)), (105, 400, 120), s_pos, groups)
+        super().__init__(pygame.transform.scale(HEDGEHOG.convert_alpha(), (100, 117)), (105, 400, 120), s_pos, groups)
         self.hp = 600
-        self.sheet = sprite_sheet((32,32), 'assets/space_hedgehog_sheet.png');
-        self.sprite_animation_timer = Timer(120)
+        self.sheet = sprite_sheet((100,117), 'assets/hedgehog_sheet.png');
+        self.sprite_animation_timer = Timer(350)
         self.current_sprite_index = 0
-        # self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+        self.mask = pygame.mask.from_surface(self.image)
         self.is_in_attack_mode = False
         self.attack_duration = 5000
         self.attack_timer = Timer(self.attack_duration)
@@ -65,26 +66,32 @@ class Boss(Entity):
 
     def sprite_animation(self):
         cap = 4
-        if self.hit:
-            self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
-            self.sprite_animation_timer.set_duration(275)
-            cap = 12
-        if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
+        # if self.hit:
+        #     self.sheet = sprite_sheet((32, 32), 'assets/dedgehog_sheet.png')
+        #     self.sprite_animation_timer.set_duration(275)
+        #     cap = 12
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+        self.mask = pygame.mask.from_surface(self.image)
+
+        if self.is_tinted:
+            self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_ADD)
+
+        if self.hit and self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index+=1
-            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (80, 80))
-            if self.is_tinted:
-                self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_ADD)
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (100, 117))
+            self.mask = pygame.mask.from_surface(self.image)
+
             if self.current_sprite_index == cap:
                 if cap == 12:
                     self.current_sprite_index = 9
                 else:
-                    self.current_sprite_index = 0
+                    self.current_sprite_index = cap
 
     def update(self, dt, target):
-        # self.sprite_animation()
+        self.sprite_animation()
+
         self.bullets.update(dt)
         distance_from_return_point = self.pos - self.return_point;
-
 
         if self.hit_timer.is_finished():
             self.is_tinted = False

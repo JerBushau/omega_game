@@ -13,6 +13,7 @@ class Bullet(Entity):
         self.m_pos = pygame.mouse.get_pos()
         self.sound = pygame.mixer.Sound('assets/sounds/ship_lazer.ogg')
         self.image.fill(LAZER)
+        self.mask = pygame.mask.from_surface(self.image)
         desired_vec = self.pos - self.m_pos
         self.image = pygame.transform.rotate(self.image, angle_from_vec(desired_vec))
         self.acc = (self.m_pos - self.pos).normalize() * self.max_speed

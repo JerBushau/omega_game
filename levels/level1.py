@@ -64,7 +64,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 15
+        self.num_of_enemies = 0
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -133,7 +133,7 @@ class Level1(GameState):
                 bullet, self.asteroid_list, False)
 
             boss_hit_list = pygame.sprite.spritecollide(
-                bullet, self.boss_list, False)
+                bullet, self.boss_list, False, pygame.sprite.collide_mask)
 
             for boss in boss_hit_list:
                 boss.hp -= 5
@@ -248,7 +248,7 @@ class Level1(GameState):
         self.asteroid_list.update()
         self.hud_items.update()
 
-        self.player_collisions()
+        # self.player_collisions()
         self.bullet_mechanics(multiplier)
         self.check_game_over(total_score)
 
