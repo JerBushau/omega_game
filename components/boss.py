@@ -23,6 +23,7 @@ class Boss(Entity):
         self.hp = 600
         self.sheet = SHEET;
         self.sprite_animation_timer = Timer(100)
+        self.sprite_animation_type = 'PWR'
         self.current_sprite_index = 0
         self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
         self.rect = self.image.get_rect()
@@ -67,27 +68,37 @@ class Boss(Entity):
             self.acc = self.seek((self.pos.x, HEIGHT + 71))
 
     def sprite_animation(self):
+        distance_from_return_point = self.pos - self.return_point;
+        print(self.current_sprite_index)
         cap = 4
-        if self.hit:
+
+        if self.hit and self.sprite_animation_type == 'PWR':
+            self.sprite_animation_type = 'DEATH'
+            self.current_sprite_index = 0
             self.sheet = sprite_sheet((100, 117), 'assets/hedgehog_sheet.png')
             self.sprite_animation_timer.set_duration(500)
 
-        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
-        self.mask = pygame.mask.from_surface(self.image)
+        # self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
+        # self.mask = pygame.mask.from_surface(self.image)
 
         if self.is_tinted and not self.hit:
-            self.image.fill((50, 50, 50, 10), special_flags=pygame.BLEND_RGB_ADD)
+            self.image.fill((7, 7, 7, 10), special_flags=pygame.BLEND_RGB_ADD)
 
-        if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
+        if self.sprite_animation_timer.is_finished():
             self.current_sprite_index+=1
-            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
-            self.mask = pygame.mask.from_surface(self.image)
 
-            if self.current_sprite_index == cap:
+            if self.current_sprite_index >= cap:
                 if self.hit:
                     self.current_sprite_index = 4
                 else:
                     self.current_sprite_index = 0
+
+            # if distance_from_return_point.length() < 40 and not self.hit:
+            #     self.current_sprite_index = 4
+
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
+            self.mask = pygame.mask.from_surface(self.image)
+            
 
     def update(self, dt, target):
         self.sprite_animation()
