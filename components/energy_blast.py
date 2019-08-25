@@ -5,6 +5,8 @@ from sprite_sheet_loader import sprite_sheet
 
 WOBBLE = pygame.image.load('assets/wobble.png')
 E_B = 'assets/hedgehog-proj.png'
+WIDTH = 1050
+HEIGHT = 600
 
 class EnergyBlast(Entity):
     def __init__(self, pos, target, *groups):
@@ -36,8 +38,8 @@ class EnergyBlast(Entity):
         super().update(dt)
 
         if (self.rect.y <= -50
-            or self.rect.y >= 450
+            or self.rect.y >= HEIGHT + 50
             or self.rect.x <= 0
-            or self.rect.x >= 700):
+            or self.rect.x >= WIDTH):
             self.kill()
 

@@ -3,8 +3,8 @@ from random import randint, uniform
 
 vec = pygame.math.Vector2
 
-WIDTH = 700
-HEIGHT = 400
+WIDTH = 1050
+HEIGHT = 600
 FLEE_DISTANCE = 400
 
 class Entity(pygame.sprite.Sprite):

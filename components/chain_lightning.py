@@ -5,6 +5,8 @@ from components.entity import Entity
 vec = pygame.math.Vector2
 
 WOBBLE = pygame.image.load('assets/wobble.png')
+WIDTH = 1050
+HEIGHT = 600
 
 class Chain_Lightning(Entity):
     """Bullet type class that will jump from enemy to enemy"""

@@ -5,8 +5,8 @@ from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
 from helpers import angle_from_vec
 
-HEIGHT = 400
-WIDTH = 700
+WIDTH = 1050
+HEIGHT = 600
 
 vec = pygame.math.Vector2
 
@@ -16,7 +16,7 @@ class Player(Entity):
     """ represents the Player. """
 
     def __init__(self, *groups):
-        super().__init__(pygame.transform.scale(PLAYER, (105, 105)), (200, 800, 120), (WIDTH / 2, HEIGHT - 50), groups)
+        super().__init__(pygame.transform.scale(PLAYER, (135, 135)), (200, 800, 120), (WIDTH/2, HEIGHT-75), groups)
         self.mask = pygame.mask.from_surface(self.image)
         self.image.fill((10, 10, 10, 10), special_flags=pygame.BLEND_RGB_ADD)
         self.rect = self.image.get_rect()

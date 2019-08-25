@@ -9,8 +9,8 @@ from sprite_sheet_loader import sprite_sheet
 
 vec = pygame.math.Vector2
 
-WIDTH = 700
-HEIGHT = 400
+WIDTH = 1050
+HEIGHT = 600
 
 HEDGEHOG = pygame.image.load('assets/hedgehog.png')
 
@@ -34,7 +34,7 @@ class Boss(Entity):
         self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
-        self.possible_points = [(350, 70), (200, 80), (350, 100), (500, 70)]
+        self.possible_points = [(200, 150), (505, 300), (800, 175)]
         self.point = 0
         self.return_point = self.possible_points[self.point]
         self.energy_blast_timer = Timer(100)
@@ -65,11 +65,10 @@ class Boss(Entity):
         if self.death_animation_timer.is_finished():
             self.kill()
         else:
-            self.acc = self.seek((self.pos.x, HEIGHT + 71))
+            self.acc = self.seek((self.pos.x, HEIGHT + 100))
 
     def sprite_animation(self):
         distance_from_return_point = self.pos - self.return_point;
-        print(self.current_sprite_index)
         cap = 4
 
         if self.hit and self.sprite_animation_type == 'PWR':
@@ -93,12 +92,13 @@ class Boss(Entity):
                 else:
                     self.current_sprite_index = 0
 
+            # uncomment to stop animation when blasting
             # if distance_from_return_point.length() < 40 and not self.hit:
             #     self.current_sprite_index = 4
 
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
             self.mask = pygame.mask.from_surface(self.image)
-            
+
 
     def update(self, dt, target):
         self.sprite_animation()
@@ -127,7 +127,7 @@ class Boss(Entity):
         if self.attack_timer.is_finished():
             self.is_in_attack_mode = False
             self.point += 1
-            if self.point == 4:
+            if self.point == 3:
                 self.point = 0
             self.return_point = self.possible_points[self.point]
 

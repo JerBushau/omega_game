@@ -4,6 +4,8 @@ from helpers import angle_from_vec
 vec = pygame.math.Vector2
 
 LAZER = (0, 255, 43)
+WIDTH = 1050
+HEIGHT = 600
 
 class Bullet(Entity):
     """ represents Projectiles """
@@ -26,9 +28,9 @@ class Bullet(Entity):
         super().update(dt)
 
         if (self.rect.y <= -50
-            or self.rect.y >= 450
+            or self.rect.y >= HEIGHT + 50
             or self.rect.x <= 0
-            or self.rect.x >= 700):
+            or self.rect.x >= WIDTH):
             self.kill()
 
 

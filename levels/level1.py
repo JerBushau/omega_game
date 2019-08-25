@@ -20,6 +20,8 @@ BL2 = 'assets/002.png'
 BL3 = 'assets/003.png'
 
 WHITE = (255, 255, 255)
+WIDTH = 1050
+HEIGHT = 600
 
 # these functions should be moved to a class
 def text_objects(text, font, color):
@@ -55,10 +57,10 @@ class Level1(GameState):
         pygame.mouse.set_visible(False)
 
         bg = parallax.ParallaxSurface((1400, 400), pygame.RLEACCEL)
-        bg.add(BL3, 8)
-        bg.add(BL2, 6)
-        bg.add(BL1, 3)
-        bg.add(BL0, 2)
+        bg.add(BL3, 8, (WIDTH*2, HEIGHT))
+        bg.add(BL2, 6, (WIDTH*2, HEIGHT))
+        bg.add(BL1, 3, (WIDTH*2, HEIGHT))
+        bg.add(BL0, 2, (WIDTH*2, HEIGHT))
 
         self.background = bg
 
@@ -78,9 +80,9 @@ class Level1(GameState):
         self.player = Player(self.player_list)
 
         self.crosshair = Crosshair()
-        self.hud_score = Hud(570, 350, 120, 40, 'SCORE')
-        self.hud_ammo = Hud(570, 300, 120, 40, 'AMMO')
-        self.hud_multiplier = Hud(510, 350, 50, 40, '', 'x', True)
+        self.hud_score = Hud(WIDTH-130, HEIGHT-50, 120, 40, 'SCORE')
+        self.hud_ammo = Hud(WIDTH-130, HEIGHT-100, 120, 40, 'AMMO')
+        self.hud_multiplier = Hud(WIDTH-190, HEIGHT-50, 50, 40, '', 'x', True)
         self.hud_items.add(self.hud_score)
         self.hud_items.add(self.hud_ammo)
         self.hud_items.add(self.hud_multiplier)
