@@ -10,7 +10,11 @@ TODO:
 -----
 Add controller support -- https://www.pygame.org/docs/ref/joystick.html#module-pygame.joystick
 
-Change aspect ratio
+Set up constants so aspec ratio can be set
+
+Cut scenes before bosses
+
+Post game scene to display score and allow for upgrades
 
 New art: weapons, ships, enemies, bosses, sheilds, various power up effects, ammo projectiles,
 
@@ -20,16 +24,16 @@ Make Win/Loose messages a scene with a timer or button instead
 
 All projectiles and other on screen entities that move should inherit from entity class so that they can benefit from vector based movement
 
-Create more robust player class that takes a weapon and ship parameter
+Base classes for Bosses and enemies
+
+Base class for weapons
+
+Create more robust player class that takes a ship parameter
 
 Create notification system
 
 Add player abilities such as armor, increased attack speed, shield that pushes enemies within a given radius away from player
 
 Create ship class. Weapon should take ammo param and ship should take the weap
-
-Create a base class (based on Entity class) for enemies allowing for more robust enemies in the future
-
-Create at least one real boss and boss fight
 
 Decide whether or not to go side scroller vs static vs top scroller

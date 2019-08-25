@@ -5,7 +5,7 @@ class Weapon:
 
     def __init__(self, ammo_type):
         self.is_firing = False
-        self.cooldown_timer = Timer(180)
+        self.cooldown_timer = Timer(200)
         self.ammo_type = ammo_type
         self.ammo = 1000
         self.bullets = pygame.sprite.Group()
