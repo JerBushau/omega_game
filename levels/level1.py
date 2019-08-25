@@ -118,10 +118,13 @@ class Level1(GameState):
 
 
                 if enemy_bullet_player_hit_list:
-                    pygame.mixer.music.fadeout(1000)
-                    message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
+                    self.player.hp -= 1
+                    bullet.kill()
+                    if self.player.hp == 0:
+                        pygame.mixer.music.fadeout(1000)
+                        message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
 
-                    self.done = True
+                        self.done = True
 
 
         for bullet in self.player.weapon.bullets:
