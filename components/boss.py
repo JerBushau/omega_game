@@ -34,7 +34,7 @@ class Boss(Entity):
         self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
-        self.possible_points = [(200, 150), (505, 300), (800, 175)]
+        self.possible_points = [(200, 150), (505, 300), (800, 175), (525, 150)]
         self.point = 0
         self.return_point = self.possible_points[self.point]
         self.energy_blast_timer = Timer(100)
@@ -119,15 +119,10 @@ class Boss(Entity):
             if not self.attack_timer.is_active:
                 self.attack_timer.start()
 
-        if self.is_in_attack_mode == True:
-            self.attack_timer.set_duration(self.attack_duration / 1.8)
-        else:
-            self.attack_timer.set_duration(self.attack_duration)
-
         if self.attack_timer.is_finished():
             self.is_in_attack_mode = False
             self.point += 1
-            if self.point == 3:
+            if self.point == len(self.possible_points):
                 self.point = 0
             self.return_point = self.possible_points[self.point]
 
