@@ -15,9 +15,6 @@ class EnergyBlast(Entity):
         self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0
-        # self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (50, 50))
-        # self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.image)
         self.target = target
         self.acc = self.seek_with_approach(target)
 
@@ -27,7 +24,7 @@ class EnergyBlast(Entity):
         cap = 4
         if self.sprite_animation_timer.is_finished() and self.current_sprite_index < cap:
             self.current_sprite_index += 1
-            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (40, 40))
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (50, 50))
             self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect()
             if self.current_sprite_index == cap:
