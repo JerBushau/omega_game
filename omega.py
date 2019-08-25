@@ -9,7 +9,7 @@ from game import Game
 from helpers import text_objects, button
 
 
-START_BG = 'assets/start_bg.png'
+START_BG = 'assets/background_start.png'
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
