@@ -39,6 +39,7 @@ class StartScreen(GameState):
         self.done = True
 
     def draw(self, surface):
+        surface.fill(WHITE)
         surface.blit(self.background.image, self.background.rect)
         self.top_score_hud.update(dest=surface)
 
