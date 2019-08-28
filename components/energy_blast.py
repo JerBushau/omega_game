@@ -9,15 +9,17 @@ WIDTH = 1050
 HEIGHT = 600
 
 class EnergyBlast(Entity):
-    def __init__(self, pos, target, *groups):
+    def __init__(self, pos, target, seeking=False, *groups):
         SHEET = sprite_sheet((32, 32), E_B)
         super().__init__(SHEET[0], (250, 100, 120), pos, groups)
         self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0
         self.target = target
-        self.acc = self.seek_with_approach(target)
-
+        if seeking:
+            self.acc = self.seek(target)
+        else:
+            self.acc = target
         self.sprite_animation_timer.start_repeating()
 
     def sprite_animation(self):

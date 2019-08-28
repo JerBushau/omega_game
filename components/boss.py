@@ -7,6 +7,8 @@ from components.bullet import Bullet
 from components.energy_blast import EnergyBlast
 from sprite_sheet_loader import sprite_sheet
 
+from math import sin, cos, pi
+
 vec = pygame.math.Vector2
 
 WIDTH = 1050
@@ -20,7 +22,7 @@ class Boss(Entity):
     def __init__(self, s_pos=(-30, -30), *groups):
         SHEET = sprite_sheet((100,117), 'assets/hedgehog_pwr_sheet.png')
         super().__init__(pygame.transform.scale(SHEET[0], (200, 217)), (105, 400, 120), s_pos, groups)
-        self.hp = 600
+        self.hp = 1200
         self.sheet = SHEET;
         self.sprite_animation_timer = Timer(100)
         self.sprite_animation_type = 'PWR'
@@ -41,8 +43,13 @@ class Boss(Entity):
         self.bullets = pygame.sprite.Group()
         self.hit_timer = Timer(175)
         self.is_tinted = False
+        self.current_angle = 0
 
         self.sprite_animation_timer.start_repeating()
+
+
+    def direction_from_angle(self, angle):
+        return vec(cos(angle), sin(angle))
 
     def collision_detected(self):
         self.is_tinted = True
@@ -114,7 +121,27 @@ class Boss(Entity):
             self.start_energy_blast()
 
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
-            EnergyBlast(self.rect.center, target, self.bullets)
+
+            if self.point == 3 or self.point == 1:
+                self.energy_blast_timer.set_duration(65)
+                self.current_angle += 8
+                if self.current_angle > 360:
+                    self.current_angle = 0
+                # spiral blast
+                blast_direction = self.direction_from_angle(self.current_angle)
+                blast_target = blast_direction.normalize()*self.max_speed
+                EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+                # circular blast
+                # for i in range(0, 360+1, 20):
+                #     blast_direction = self.direction_from_angle(i)
+                #     blast_target = blast_direction.normalize()*self.max_speed
+                #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+            else:
+                self.energy_blast_timer.set_duration(100)
+                blast_target = target
+                EnergyBlast(self.rect.center, blast_target, True, self.bullets)
+
+
             self.is_in_attack_mode = True
             if not self.attack_timer.is_active:
                 self.attack_timer.start()
