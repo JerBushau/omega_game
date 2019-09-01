@@ -7,7 +7,7 @@ from components.bullet import Bullet
 from components.energy_blast import EnergyBlast
 from sprite_sheet_loader import sprite_sheet
 
-from math import sin, cos, pi
+from math import sin, cos, pi, radians
 
 vec = pygame.math.Vector2
 
@@ -110,7 +110,6 @@ class Boss(Entity):
     def update(self, dt, target):
         self.sprite_animation()
 
-        self.bullets.update(dt)
         distance_from_return_point = self.pos - self.return_point;
 
         if self.hit_timer.is_finished():
@@ -122,20 +121,44 @@ class Boss(Entity):
 
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
 
-            if self.point == 3 or self.point == 1:
+            if self.point == 3:
                 self.energy_blast_timer.set_duration(65)
-                self.current_angle += 8
+                self.current_angle += 16
                 if self.current_angle > 360:
                     self.current_angle = 0
                 # spiral blast
-                blast_direction = self.direction_from_angle(self.current_angle)
+                blast_direction = self.direction_from_angle(radians(self.current_angle))
                 blast_target = blast_direction.normalize()*self.max_speed
                 EnergyBlast(self.rect.center, blast_target, False, self.bullets)
-                # circular blast
-                # for i in range(0, 360+1, 20):
-                #     blast_direction = self.direction_from_angle(i)
-                #     blast_target = blast_direction.normalize()*self.max_speed
-                #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+
+            # elif self.point == 1:
+            #     # circular blast
+            #     self.energy_blast_timer.set_duration(1500)
+            #     for i in range(0, 361, 30):
+            #         blast_direction = self.direction_from_angle(radians(i))
+            #         blast_target = blast_direction.normalize()*self.max_speed
+            #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+
+            # elif self.point == 2:
+            #     self.energy_blast_timer.set_duration(50)
+            #     self.current_angle += 2
+            #     if self.current_angle > 360:
+            #         self.current_angle = 0
+            #     # spiral blast
+            #     blast_direction = self.direction_from_angle(self.current_angle)
+            #     blast_target = blast_direction.normalize()*self.max_speed
+            #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+
+            # elif self.point == 3:
+            #     # circular blast extreme
+            #     self.energy_blast_timer.set_duration(300)
+            #     for i in range(0, 181, 36):
+            #         print(i)
+            #         blast_direction = self.direction_from_angle(radians(i))
+            #         blast_target = blast_direction.normalize()*self.max_speed
+            #         print(blast_target)
+            #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+
             else:
                 self.energy_blast_timer.set_duration(100)
                 blast_target = target
@@ -159,4 +182,6 @@ class Boss(Entity):
 
         if self.death_animation_timer.is_active and self.hit:
             self.death_movement()
+
+        self.bullets.update(dt)
         super().update(dt)
