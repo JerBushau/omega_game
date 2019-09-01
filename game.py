@@ -67,4 +67,5 @@ class Game(object):
             self.event_loop()
             self.update(dt)
             self.draw()
+            pygame.display.set_caption(str(self.clock.get_fps()))
             pygame.display.update()
