@@ -3,6 +3,7 @@ from components.weapon import Weapon
 from components.bullet import Bullet
 from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
+from components.signaly import signaly
 from helpers import angle_from_vec
 
 WIDTH = 1050
@@ -16,7 +17,7 @@ class Player(Entity):
     """ represents the Player. """
 
     def __init__(self, *groups):
-        super().__init__(pygame.transform.scale(PLAYER, (135, 135)), (200, 800, 120), (WIDTH/2, HEIGHT-60), groups)
+        super().__init__(pygame.transform.scale(PLAYER, (125, 125)), (200, 800, 120), (WIDTH/2, HEIGHT-50), groups)
         self.hp = 10
         self.mask = pygame.mask.from_surface(self.image)
         self.image.fill((5, 5, 5, 10), special_flags=pygame.BLEND_RGB_ADD)
@@ -45,8 +46,9 @@ class Player(Entity):
                 print('you loose')
                 pygame.mixer.music.fadeout(1000)
                 # message_display('YOU LOOSE OUT OF AMMO!!!', WHITE, pygame.display.get_surface(), (700, 400))
+                signaly.emit('GAME_OVER')
 
-                self.done = True
+                # self.done = True
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
@@ -83,7 +85,7 @@ class Player(Entity):
 
     def update(self, dt):
         """ update the player's position to the mouse x position """
-
+        self.weapon.bullets.update(dt)
         if self.direction == 'left':
             self.acc = vec(-1, 0).normalize() * self.max_speed
         elif self.direction == 'right':
