@@ -12,6 +12,7 @@ from components.crosshair import Crosshair
 from score import scores
 from gamestate import GameState
 import parallax
+from components.signaly import signaly
 
 BACKGROUND = 'assets/background1.png'
 BL0 = 'assets/000.png'
@@ -51,6 +52,7 @@ class Level1(GameState):
         self.next_state = 'START'
 
     def startup(self, persistent):
+
         pygame.mixer.music.load('assets/music/Omega.ogg')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1, 0.0)
@@ -66,7 +68,7 @@ class Level1(GameState):
 
         self.phase = 0
 
-        self.num_of_enemies = 1
+        self.num_of_enemies = 0
         self.score = 0
         self.shots_fired = 0
         self.streak = 1
@@ -89,6 +91,8 @@ class Level1(GameState):
 
         self.wave1()
 
+        signaly.subscribe('GAME_OVER', self.end, 1)
+
         super().startup(persistent)
 
     def get_event(self, event):
@@ -104,6 +108,9 @@ class Level1(GameState):
                               shots_fired=self.shots_fired,
                               done=self.done)
 
+    def end(self):
+        print('game over')
+        self.done = True
 
     def bullet_mechanics(self, multiplier):
          # --- calculate mechanics for each bullet
@@ -245,9 +252,6 @@ class Level1(GameState):
         # call the update method on all the sprites
         self.player.update(dt)
         self.crosshair.update()
-        self.player.weapon.bullets.update(dt)
-        for boss in self.boss_list:
-            boss.bullets.update(dt)
         self.boss_list.update(dt, self.player.rect.center)
         self.enemy_list.update(dt, self.player.rect.center)
         self.asteroid_list.update()
