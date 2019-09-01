@@ -11,7 +11,7 @@ HEIGHT = 600
 class EnergyBlast(Entity):
     def __init__(self, pos, target, seeking=False, *groups):
         SHEET = sprite_sheet((32, 32), E_B)
-        super().__init__(SHEET[0], (250, 100, 120), pos, groups)
+        super().__init__(SHEET[0], (450, 550, 120), pos, groups)
         self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.current_sprite_index = 0
