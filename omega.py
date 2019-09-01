@@ -47,7 +47,7 @@ class StartScreen(GameState):
         text_surf, text_rect = text_objects("OMEGA!", large_text, (210,208,224))
         text_rect.center = ((WIDTH/2),(HEIGHT/2.55))
         surface.blit(text_surf, text_rect)
-        button('PLAY', ((WIDTH/2) - 50), HEIGHT/1.95, 100, 40,
+        button('PLAY', ((WIDTH/2) - 50), HEIGHT/1.75, 100, 40,
               ((37,31,71), (108,100,153), (210,208,224)), surface, self.end)
 
     def update(self, dt):
