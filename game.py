@@ -25,6 +25,8 @@ class Game(object):
         self.states = states
         self.state_name = start_state
         self.state = self.states[self.state_name]
+        # don't forget to run startup on start state - would otherwise get skipped
+        self.state.startup({})
 
     def event_loop(self):
         """Events are passed for handling to the current state."""

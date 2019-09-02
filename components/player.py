@@ -19,7 +19,7 @@ class Player(Entity):
     def __init__(self, *groups):
         super().__init__(pygame.transform.scale(PLAYER, (125, 125)), (200, 800, 120), (WIDTH/2, HEIGHT-50), groups)
         self.hp = 10
-        self.mask = pygame.mask.from_surface(self.image)
+        self.mask = pygame.mask.from_surface(self.image, 200)
         self.image.fill((5, 5, 5, 10), special_flags=pygame.BLEND_RGB_ADD)
         self.rect = self.image.get_rect()
         self.weapon = Weapon(Bullet)

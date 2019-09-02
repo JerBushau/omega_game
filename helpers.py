@@ -16,6 +16,7 @@ def text_objects(text, font, color):
 
 
 # create a button class rather than this function
+# buttons should just be a normal component based on pygame.sprite.Sprite
 def button(msg, x, y, width, height, colors, surface, action=None):
     """Function to easily create buttons"""
 

@@ -1,5 +1,4 @@
 import pygame
-from collections import OrderedDict
 
 class Signaly:
     def __init__(self):

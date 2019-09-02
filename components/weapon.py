@@ -10,7 +10,6 @@ class Weapon:
         self.ammo = 1000
         self.bullets = pygame.sprite.Group()
 
-
     def begin_fire(self, pos):
         self.is_firing = True
         self.fire(pos, True)
