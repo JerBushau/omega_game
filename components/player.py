@@ -4,6 +4,8 @@ from components.bullet import Bullet
 from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
 from components.signaly import signaly
+from sprite_sheet_loader import sprite_sheet
+from timer import Timer
 from helpers import angle_from_vec
 
 WIDTH = 1050
@@ -17,17 +19,24 @@ class Player(Entity):
     """ represents the Player. """
 
     def __init__(self, *groups):
+        SHEET = sprite_sheet((100,100), 'assets/ship-death.png')
         super().__init__(pygame.transform.scale(PLAYER, (125, 125)), (200, 800, 120), (WIDTH/2, HEIGHT-50), groups)
-        self.hp = 10
+        self.hp = 3
         self.mask = pygame.mask.from_surface(self.image, 200)
         self.image.fill((5, 5, 5, 10), special_flags=pygame.BLEND_RGB_ADD)
+        self.sheet = SHEET
         self.rect = self.image.get_rect()
         self.weapon = Weapon(Bullet)
         self.direction = 'stop'
+        self.death_animation_timer = Timer(60)
+        self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
+        self.current_sprite_index = 0
+        self.dying = False
+        self.post_death_timer = Timer(500)
 
     def get_event(self, event, **state):
         if event.type == pygame.MOUSEBUTTONDOWN:
-            can_fire = self.weapon.ammo > 0
+            can_fire = self.weapon.ammo > 0 and not self.dying
             if can_fire and event.button == 1:
                 self.weapon.begin_fire(self.rect.center)
                 state['shots_fired'] += 1
@@ -68,6 +77,27 @@ class Player(Entity):
             if event.key == pygame.K_d:
                 self.move('stop')
 
+    def explode(self):
+        self.destruction_sound.play()
+        self.dying = True
+        self.max_speed = 45
+        self.death_animation_timer.start_repeating()
+        self.weapon.cease_fire()
+        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (125, 125))
+        
+    def sprite_animation(self):
+        cap = 11
+
+        if (self.death_animation_timer.is_finished()):
+            self.current_sprite_index+=1
+
+            if self.current_sprite_index == cap-1:
+                self.post_death_timer.start()
+            elif self.current_sprite_index >= cap:
+                self.current_sprite_index = cap
+                
+
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (125, 125))
 
     def draw(self, screen):
         """ draw player specifically """
@@ -77,7 +107,6 @@ class Player(Entity):
         img, rect = self.rot_center(self.image, self.rect, angle)
         rect.center = self.rect.center
 
-        # rect.clamp_ip(screen.get_rect())
         screen.blit(img, rect)
 
     def move(self, direction):
@@ -85,7 +114,13 @@ class Player(Entity):
 
     def update(self, dt):
         """ update the player's position to the mouse x position """
+        self.sprite_animation()
         self.weapon.bullets.update(dt)
+
+        if self.post_death_timer.is_finished():
+            self.kill()
+            signaly.emit('GAME_OVER')
+
         if self.direction == 'left':
             self.acc = vec(-1, 0).normalize() * self.max_speed
         elif self.direction == 'right':
