@@ -4,6 +4,7 @@ from components.bullet import Bullet
 from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
 from components.signaly import signaly
+from components.player_health_bar import PlayerHealthBar
 from sprite_sheet_loader import sprite_sheet
 from timer import Timer
 from helpers import angle_from_vec
@@ -21,7 +22,7 @@ class Player(Entity):
     def __init__(self, *groups):
         SHEET = sprite_sheet((100,100), 'assets/ship-death.png')
         super().__init__(pygame.transform.scale(PLAYER, (125, 125)), (200, 800, 120), (WIDTH/2, HEIGHT-50), groups)
-        self.hp = 3
+        self.hp = 10
         self.mask = pygame.mask.from_surface(self.image, 200)
         self.image.fill((5, 5, 5, 10), special_flags=pygame.BLEND_RGB_ADD)
         self.sheet = SHEET
@@ -33,6 +34,9 @@ class Player(Entity):
         self.current_sprite_index = 0
         self.dying = False
         self.post_death_timer = Timer(500)
+        self.health_bar = PlayerHealthBar(self.hp)
+        self.regen_cooldown_timer = Timer(50*100)
+        self.regen_timer = Timer(500)
 
     def get_event(self, event, **state):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -77,6 +81,25 @@ class Player(Entity):
             if event.key == pygame.K_d:
                 self.move('stop')
 
+    def collision_detected(self, hp_delta):
+        self.hp -= hp_delta
+
+        self.regen_timer.reset()
+        self.regen_cooldown_timer.start()
+
+    def handle_regen(self):
+        if self.regen_cooldown_timer.is_finished():
+            print('cd reached')
+            self.regen_timer.start_repeating()
+
+        if self.regen_timer.is_finished():
+            print('regen tick')
+            self.hp += 1
+
+        if self.hp == self.health_bar.starting_hp:
+            self.hp = self.health_bar.starting_hp
+            self.regen_timer.reset()
+
     def explode(self):
         self.destruction_sound.play()
         self.dying = True
@@ -114,8 +137,11 @@ class Player(Entity):
 
     def update(self, dt):
         """ update the player's position to the mouse x position """
+        self.handle_regen()
         self.sprite_animation()
         self.weapon.bullets.update(dt)
+        self.health_bar.update(self.hp)
+
 
         if self.post_death_timer.is_finished():
             self.kill()
