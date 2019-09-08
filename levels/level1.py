@@ -1,4 +1,6 @@
 import pygame
+import random
+from math import floor
 from components.background import Background
 from components.boss import Boss
 from components.enemy import Enemy
@@ -9,6 +11,8 @@ from components.wobble import Wobble_shot
 from components.asteroid import Asteroid, Asteroid_group
 from components.chain_lightning import Chain_Lightning
 from components.crosshair import Crosshair
+from components.on_screen_dmg import OnScreenDmg
+from components.falling_mssg import FallingMssg
 from score import scores
 from gamestate import GameState
 import parallax
@@ -53,9 +57,9 @@ class Level1(GameState):
 
     def startup(self, persistent):
 
-        pygame.mixer.music.load('assets/music/Omega.ogg')
-        pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play(-1, 0.0)
+        # pygame.mixer.music.load('assets/music/Omega.ogg')
+        # pygame.mixer.music.set_volume(0.5)
+        # pygame.mixer.music.play(-1, 0.0)
         pygame.mouse.set_visible(False)
 
         bg = parallax.ParallaxSurface((1400, 400), pygame.RLEACCEL)
@@ -65,6 +69,7 @@ class Level1(GameState):
         bg.add(BL0, 2, (WIDTH*2, HEIGHT))
 
         self.background = bg
+        self.finished = False
 
         self.phase = 0
 
@@ -74,6 +79,7 @@ class Level1(GameState):
         self.streak = 1
         self.misses = 0
 
+        self.mssg_group = pygame.sprite.Group()
         self.enemy_list = pygame.sprite.Group()
         self.asteroid_list = Asteroid_group()
         self.boss_list = pygame.sprite.Group()
@@ -82,16 +88,12 @@ class Level1(GameState):
         self.player = Player(self.player_list)
 
         self.crosshair = Crosshair()
-        self.hud_score = Hud(WIDTH-130, HEIGHT-50, 120, 40, 'SCORE')
-        self.hud_ammo = Hud(WIDTH-130, HEIGHT-100, 120, 40, 'AMMO')
-        self.hud_multiplier = Hud(WIDTH-190, HEIGHT-50, 50, 40, '', 'x', True)
-        self.hud_items.add(self.hud_score)
+        self.hud_ammo = Hud(WIDTH-130, HEIGHT-50, 120, 40, 'AMMO')
         self.hud_items.add(self.hud_ammo)
-        self.hud_items.add(self.hud_multiplier)
 
         self.wave1()
 
-        signaly.subscribe('GAME_OVER', self.end, 1)
+        signaly.subscribe('GAME_OVER', self.game_over, 1)
 
         super().startup(persistent)
 
@@ -108,8 +110,11 @@ class Level1(GameState):
                               shots_fired=self.shots_fired,
                               done=self.done)
 
-    def end(self):
+    def game_over(self):
         print('game over')
+        FallingMssg('DEFEATED BY HEDGELORD', (255, 255, 255, 255), self.end, ((WIDTH/2), -10), 30, self.mssg_group)
+
+    def end(self):
         self.done = True
 
     def bullet_mechanics(self, multiplier):
@@ -126,12 +131,13 @@ class Level1(GameState):
 
                 if enemy_bullet_player_hit_list:
                     self.player.hp -= 1
-                    bullet.kill()
+
                     if self.player.hp == 0:
                         pygame.mixer.music.fadeout(1000)
-                        message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
-
-                        self.done = True
+                        # message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
+                        self.player.explode()
+                    if not self.player.hp <=0:
+                        bullet.kill()
 
 
         for bullet in self.player.weapon.bullets:
@@ -148,13 +154,22 @@ class Level1(GameState):
                 bullet, self.boss_list, False, pygame.sprite.collide_mask)
 
             for boss in boss_hit_list:
-                boss.hp -= 5
-                boss.collision_detected()
-                bullet.kill()
+                if not boss.hit:
+                    crit_roll = random.randint(1, 101)
+                    will_crit = crit_roll > 96
+                    if will_crit:
+                        dmg = 5 * floor(random.randint(1.0,5.0))
+                        OnScreenDmg('{}'.format(dmg), (255, 31, 31, 230), bullet.rect.center, 25, self.mssg_group)
+                    else:
+                        dmg = 5
+                        OnScreenDmg('{}'.format(dmg), (255, 51, 51, 175), bullet.rect.center, 17, self.mssg_group)
+                    boss.hp -= dmg
+                    boss.collision_detected()
+                    bullet.kill()
 
-                if boss.hp <= 0:
-                    self.score += (150 * multiplier)
-                    boss.explode()
+                    if boss.hp <= 0:
+                        self.score += (150 * multiplier)
+                        boss.explode()
 
             for asteroid in asteroid_hit_list:
                 asteroid.hp -= 3
@@ -218,23 +233,20 @@ class Level1(GameState):
                 Boss((200, -70), self.boss_list)
                 return
 
-            print('winner', self.shots_fired, self.score, total_score)
-            pygame.mixer.music.fadeout(1000)
-            perfect = self.shots_fired <= self.num_of_enemies and not self.misses
+            if not self.finished:
+                print('winner', self.shots_fired, self.score, total_score)
+                pygame.mixer.music.fadeout(1000)
 
-            if total_score > self.scores.top_score:
-                self.scores.update_ts(total_score)
+                if total_score > self.scores.top_score:
+                    self.scores.update_ts(total_score)
 
-            if perfect:
-                message_display('PERFECT!! YOU WIN!! score: {}'
-                    .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
-            elif self.player.weapon.ammo == 0:
-                message_display('CLOSE ONE, YOU WIN!! score: {}'
-                    .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
-            else:
-                message_display('YOU WIN!!! total score: {}'
-                    .format(str(total_score)), WHITE, pygame.display.get_surface(), (700, 400))
-            self.done = True
+                if self.player.weapon.ammo == 0:
+                    FallingMssg('CLOSE ONE, YOU WIN!! score: {}'
+                        .format(str(total_score)), (255, 255, 255, 255), self.end, ((WIDTH/2), -10), 30, self.mssg_group)
+                else:
+                    FallingMssg('YOU DESTOYED HEDGELORD'
+                        .format(str(total_score)), (255, 255, 255, 255), self.end, ((WIDTH/2), -10), 30, self.mssg_group)
+                self.finished = True
 
     def wave1(self):
         for i in range(self.num_of_enemies):
@@ -244,13 +256,14 @@ class Level1(GameState):
         multiplier = int(self.streak/2) or 1
         total_score = int(self.score * 100) or 0
         self.hud_ammo.prop = self.player.weapon.ammo
-        self.hud_score.prop = total_score
-        self.hud_multiplier.prop = multiplier
+        # self.hud_score.prop = total_score
+        # self.hud_multiplier.prop = multiplier
 
         self.check_game_over(total_score)
 
         # call the update method on all the sprites
         self.player.update(dt)
+        self.mssg_group.update(dt)
         self.crosshair.update()
         self.boss_list.update(dt, self.player.rect.center)
         self.enemy_list.update(dt, self.player.rect.center)
@@ -269,11 +282,13 @@ class Level1(GameState):
 
         self.background.draw(surface)
         self.hud_items.draw(surface)
+        self.mssg_group.draw(surface)
         self.asteroid_list.draw(surface)
         self.enemy_list.draw(surface)
         self.boss_list.draw(surface)
         for boss in self.boss_list:
             boss.bullets.draw(surface)
+            boss.health_bar.draw(surface)
         self.player.weapon.bullets.draw(surface)
         self.crosshair.draw(surface)
         self.player.draw(surface)
