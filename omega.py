@@ -53,7 +53,7 @@ class StartScreen(GameState):
         self.top_score_hud.update(dest=surface)
         self.button_list.draw(surface)
 
-        large_text = pygame.font.Font('freesansbold.ttf', 120)
+        large_text = pygame.font.Font('./assets/fonts/Sansation-Bold.ttf', 120)
         text_surf, text_rect = text_objects("OMEGA!", large_text, (210,208,224))
         text_rect.center = ((WIDTH/2),(HEIGHT/2.55))
         surface.blit(text_surf, text_rect)

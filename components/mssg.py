@@ -15,7 +15,7 @@ HEIGHT = 600
 class Mssg(Entity):
     def __init__(self, text, color, pos=((WIDTH/2), -20), font_size=17, *groups):
         super().__init__(pygame.Surface([0, 0]), (200, 100, 120), pos, groups)
-        large_text = pygame.font.Font('freesansbold.ttf', font_size)
+        large_text = pygame.font.Font('./assets/fonts/Sansation-Bold.ttf', font_size)
         self.starting_pos = pos
         self.image, self.rect = text_objects(text, large_text, color)
         self.rect.center = pos

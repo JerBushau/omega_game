@@ -28,26 +28,6 @@ WHITE = (255, 255, 255)
 WIDTH = 1050
 HEIGHT = 600
 
-# these functions should be moved to a class
-def text_objects(text, font, color):
-    """Creates 'text objects' for displaying messages"""
-    text_surf = font.render(text, True, color)
-    return text_surf, text_surf.get_rect()
-
-
-def message_display(text, color, surface, screenDimentions):
-    large_text = pygame.font.Font('freesansbold.ttf',30)
-    # create text 'objects'
-    text_surf, text_rect = text_objects(text, large_text, color)
-    text_rect.center = ((screenDimentions[0]/2), (screenDimentions[1]/2))
-    # blit the text object to the screen
-    surface.blit(text_surf, text_rect)
-    pygame.display.update()
-    # pause for a moment to allow player to see message
-    # this is terrible need legit timer - don't want to freeze game
-    pygame.time.delay(1500)
-
-
 class Level1(GameState):
 
     def __init__(self):
@@ -86,10 +66,7 @@ class Level1(GameState):
         self.hud_items = pygame.sprite.Group()
         self.player_list = pygame.sprite.Group()
         self.player = Player(self.player_list)
-
         self.crosshair = Crosshair()
-        self.hud_ammo = Hud(WIDTH-130, HEIGHT-50, 120, 40, 'AMMO')
-        self.hud_items.add(self.hud_ammo)
 
         self.wave1()
 
@@ -130,8 +107,9 @@ class Level1(GameState):
 
 
                 if enemy_bullet_player_hit_list:
-                    self.player.hp -= 1
-
+                    self.player.collision_detected(1)
+                    if not self.player.dying:
+                        OnScreenDmg('{}'.format('HIT'), (255, 255, 255, 200), bullet.rect.center, 25, self.mssg_group)
                     if self.player.hp == 0:
                         pygame.mixer.music.fadeout(1000)
                         # message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
@@ -162,7 +140,7 @@ class Level1(GameState):
                         OnScreenDmg('{}'.format(dmg), (255, 31, 31, 230), bullet.rect.center, 25, self.mssg_group)
                     else:
                         dmg = 5
-                        OnScreenDmg('{}'.format(dmg), (255, 51, 51, 175), bullet.rect.center, 17, self.mssg_group)
+                        OnScreenDmg('{}'.format(dmg), (255, 51, 51, 175), bullet.rect.center, 20, self.mssg_group)
                     boss.hp -= dmg
                     boss.collision_detected()
                     bullet.kill()
@@ -255,7 +233,7 @@ class Level1(GameState):
     def update(self, dt):
         multiplier = int(self.streak/2) or 1
         total_score = int(self.score * 100) or 0
-        self.hud_ammo.prop = self.player.weapon.ammo
+        # self.hud_ammo.prop = self.player.weapon.ammo
         # self.hud_score.prop = total_score
         # self.hud_multiplier.prop = multiplier
 
@@ -290,5 +268,6 @@ class Level1(GameState):
             boss.bullets.draw(surface)
             boss.health_bar.draw(surface)
         self.player.weapon.bullets.draw(surface)
+        self.player.health_bar.draw(surface)
         self.crosshair.draw(surface)
         self.player.draw(surface)
