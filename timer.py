@@ -3,12 +3,12 @@ import pygame
 class Timer:
     """A generic timer"""
 
-    def __init__(self, duration):
+    def __init__(self, duration, cb=None):
         self.started_at = 0
         self.duration = duration
         self.is_active = False
         self.is_repeating = False
-
+        self.cb = cb
 
     def set_duration(self, duration):
         self.duration = duration
@@ -41,6 +41,8 @@ class Timer:
             if self.is_repeating:
                 self.start_repeating()
             else:
+                if self.cb:
+                    self.cb()
                 self.reset()
 
         return is_finished
