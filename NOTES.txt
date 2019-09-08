@@ -8,11 +8,17 @@ https://archives.seul.org/pygame/users/Jul-2007/msg00268.html -- game state engi
 
 TODO:
 -----
-Add controller support -- https://www.pygame.org/docs/ref/joystick.html#module-pygame.joystick
-
-Set up constants so aspec ratio can be set
+Notification system improvements
+	- power ups/effects
+	- System messages (you died, you win, character dialog, level information, etc...)
 
 Cut scenes before bosses
+
+Add controller support -- https://www.pygame.org/docs/ref/joystick.html#module-pygame.joystick
+
+Add player abilities such as armor, increased attack speed, shield that pushes enemies within a given radius away from player
+
+Set up constants so aspec ratio can be set
 
 Post game scene to display score and allow for upgrades
 
@@ -30,10 +36,11 @@ Base class for weapons
 
 Create more robust player class that takes a ship parameter
 
-Create notification system
-
-Add player abilities such as armor, increased attack speed, shield that pushes enemies within a given radius away from player
-
 Create ship class. Weapon should take ammo param and ship should take the weap
 
 Decide whether or not to go side scroller vs static vs top scroller
+
+
+Hedgehog phase 2 ideas:
+  - Spikes shoot off to reveal robo hedgehog
+  - Some kind of diamond weapon comes into play for hedgehog
