@@ -4,6 +4,7 @@ from components.entity import Entity
 from timer import Timer
 from components.weapon import Weapon
 from components.bullet import Bullet
+from components.boss_health_bar import BossHealthBar
 from components.energy_blast import EnergyBlast
 from sprite_sheet_loader import sprite_sheet
 
@@ -23,7 +24,7 @@ class Boss(Entity):
         SHEET = sprite_sheet((100,117), 'assets/hedgehog_pwr_sheet.png')
         super().__init__(pygame.transform.scale(SHEET[0], (200, 217)), (105, 400, 120), s_pos, groups)
         self.hp = 1200
-        self.sheet = SHEET;
+        self.sheet = SHEET
         self.sprite_animation_timer = Timer(100)
         self.sprite_animation_type = 'PWR'
         self.current_sprite_index = 0
@@ -33,7 +34,6 @@ class Boss(Entity):
         self.is_in_attack_mode = False
         self.attack_duration = 5000
         self.attack_timer = Timer(self.attack_duration)
-        self.death_animation_timer = Timer(6000)
         self.destruction_sound = pygame.mixer.Sound('assets/sounds/enemy_hit.ogg')
         self.hit = False
         self.possible_points = [(200, 150), (505, 300), (800, 175), (525, 150)]
@@ -44,6 +44,7 @@ class Boss(Entity):
         self.hit_timer = Timer(175)
         self.is_tinted = False
         self.current_angle = 0
+        self.health_bar = BossHealthBar(self.hp)
 
         self.sprite_animation_timer.start_repeating()
 
@@ -53,7 +54,8 @@ class Boss(Entity):
 
     def collision_detected(self):
         self.is_tinted = True
-        self.hit_timer.start()
+        if not self.hit_timer.is_active:
+            self.hit_timer.start()
 
     def explode(self):
         """ mark enemy as hit """
@@ -61,18 +63,13 @@ class Boss(Entity):
         self.hit = True
         self.max_speed = 75
         self.destruction_sound.play()
-        self.death_animation_timer.start()
 
     def start_energy_blast(self):
         self.energy_blast_timer.start()
 
     def death_movement(self):
-        """Enemy movement once marked as hit"""
-
-        if self.death_animation_timer.is_finished():
-            self.kill()
-        else:
-            self.acc = self.seek((self.pos.x, HEIGHT + 100))
+        """Boss movement once marked as hit"""
+        self.acc = self.seek((self.pos.x, HEIGHT + 100))
 
     def sprite_animation(self):
         distance_from_return_point = self.pos - self.return_point;
@@ -121,15 +118,15 @@ class Boss(Entity):
 
         if self.energy_blast_timer.is_finished() and not self.hit and distance_from_return_point.length() < 100:
 
-            if self.point == 3:
-                self.energy_blast_timer.set_duration(65)
-                self.current_angle += 16
-                if self.current_angle > 360:
-                    self.current_angle = 0
-                # spiral blast
-                blast_direction = self.direction_from_angle(radians(self.current_angle))
-                blast_target = blast_direction.normalize()*self.max_speed
-                EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+            # if self.point == 3:
+            #     self.energy_blast_timer.set_duration(65)
+            #     self.current_angle += 16
+            #     if self.current_angle > 360:
+            #         self.current_angle = 0
+            #     # spiral blast
+            #     blast_direction = self.direction_from_angle(radians(self.current_angle))
+            #     blast_target = blast_direction.normalize()*self.max_speed
+            #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
             # elif self.point == 1:
             #     # circular blast
@@ -139,24 +136,22 @@ class Boss(Entity):
             #         blast_target = blast_direction.normalize()*self.max_speed
             #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
-            # elif self.point == 2:
-            #     self.energy_blast_timer.set_duration(50)
-            #     self.current_angle += 2
-            #     if self.current_angle > 360:
-            #         self.current_angle = 0
-            #     # spiral blast
-            #     blast_direction = self.direction_from_angle(self.current_angle)
-            #     blast_target = blast_direction.normalize()*self.max_speed
-            #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+            if self.point == 3:
+                self.energy_blast_timer.set_duration(50)
+                self.current_angle += 2
+                if self.current_angle > 360:
+                    self.current_angle = 0
+                # spiral blast
+                blast_direction = self.direction_from_angle(self.current_angle)
+                blast_target = blast_direction.normalize()*self.max_speed
+                EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
-            # elif self.point == 3:
+            # elif self.point == 0:
             #     # circular blast extreme
             #     self.energy_blast_timer.set_duration(300)
             #     for i in range(0, 181, 36):
-            #         print(i)
             #         blast_direction = self.direction_from_angle(radians(i))
             #         blast_target = blast_direction.normalize()*self.max_speed
-            #         print(blast_target)
             #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
             else:
@@ -180,8 +175,13 @@ class Boss(Entity):
 
         self.acc = self.seek_with_approach(actual_target)
 
-        if self.death_animation_timer.is_active and self.hit:
+        if self.hit:
             self.death_movement()
 
         self.bullets.update(dt)
+        self.health_bar.update(self.hp)
+
         super().update(dt)
+
+        if self.rect.center[1] > HEIGHT + 65:
+            self.kill()
