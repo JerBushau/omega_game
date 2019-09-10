@@ -71,6 +71,7 @@ class Level1(GameState):
         self.wave1()
 
         signaly.subscribe('GAME_OVER', self.game_over, 1)
+        signaly.subscribe('PLAYER_MSSG', self.player_mssg)
 
         super().startup(persistent)
 
@@ -91,6 +92,10 @@ class Level1(GameState):
         print('game over')
         FallingMssg('DEFEATED BY HEDGELORD', (255, 255, 255, 255), self.end, ((WIDTH/2), -10), 30, self.mssg_group)
 
+    def player_mssg(self, mssg):
+        # amt = str(amount).replace('0', '', 1)
+        OnScreenDmg('+{}'.format(mssg), (0,135,236, 200), self.player.rect.center, 17, self.mssg_group)
+
     def end(self):
         self.done = True
 
@@ -110,7 +115,7 @@ class Level1(GameState):
                     self.player.collision_detected(1)
                     if not self.player.dying:
                         OnScreenDmg('{}'.format('HIT'), (255, 255, 255, 200), bullet.rect.center, 25, self.mssg_group)
-                    if self.player.hp == 0:
+                    if self.player.hp <= 0:
                         pygame.mixer.music.fadeout(1000)
                         # message_display('YOU LOOSE HIT BY BULLET!!!', WHITE, pygame.display.get_surface(), (700, 400))
                         self.player.explode()
