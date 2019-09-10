@@ -21,7 +21,7 @@ class Boss(Entity):
     """Boss entity"""
 
     def __init__(self, s_pos=(-30, -30), *groups):
-        SHEET = sprite_sheet((100,117), 'assets/hedgehog_pwr_sheet.png')
+        SHEET = sprite_sheet((100,117), 'assets/hedgehog_pwr_sheet_v0.2.png')
         super().__init__(pygame.transform.scale(SHEET[0], (200, 217)), (105, 400, 120), s_pos, groups)
         self.hp = 1200
         self.sheet = SHEET
@@ -45,6 +45,8 @@ class Boss(Entity):
         self.is_tinted = False
         self.current_angle = 0
         self.health_bar = BossHealthBar(self.hp)
+        self.blast_p3 = 0
+        self.blast_p3_points = [i for i in range(20, 36, 10)]
 
         self.sprite_animation_timer.start_repeating()
 
@@ -74,10 +76,11 @@ class Boss(Entity):
     def sprite_animation(self):
         distance_from_return_point = self.pos - self.return_point;
         cap = 4
+        start = 0
 
         if self.hit and self.sprite_animation_type == 'PWR':
             self.sprite_animation_type = 'DEATH'
-            self.current_sprite_index = 0
+            self.current_sprite_index = start
             self.sheet = sprite_sheet((100, 117), 'assets/hedgehog_sheet.png')
             self.sprite_animation_timer.set_duration(500)
 
@@ -87,18 +90,25 @@ class Boss(Entity):
         if self.is_tinted and not self.hit:
             self.image.fill((7, 7, 7, 10), special_flags=pygame.BLEND_RGB_ADD)
 
+
+        # uncomment to stop animation when blasting
+        if distance_from_return_point.length() < 40 and not self.hit:
+            cap = 7
+            start = 5
+            self.sprite_animation_timer.set_duration(75)
+        else:
+            cap = 4
+            start = 0
+
         if self.sprite_animation_timer.is_finished():
             self.current_sprite_index+=1
 
-            if self.current_sprite_index >= cap:
+            if self.current_sprite_index > cap:
                 if self.hit:
                     self.current_sprite_index = 4
                 else:
-                    self.current_sprite_index = 0
+                    self.current_sprite_index = start
 
-            # uncomment to stop animation when blasting
-            # if distance_from_return_point.length() < 40 and not self.hit:
-            #     self.current_sprite_index = 4
 
             self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (200, 217))
             self.mask = pygame.mask.from_surface(self.image)
@@ -128,17 +138,17 @@ class Boss(Entity):
             #     blast_target = blast_direction.normalize()*self.max_speed
             #     EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
-            # elif self.point == 1:
+            # if self.point == 3:
             #     # circular blast
             #     self.energy_blast_timer.set_duration(1500)
-            #     for i in range(0, 361, 30):
+            #     for i in range(0, 361, 20):
             #         blast_direction = self.direction_from_angle(radians(i))
             #         blast_target = blast_direction.normalize()*self.max_speed
             #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
-            if self.point == 3:
-                self.energy_blast_timer.set_duration(50)
-                self.current_angle += 2
+            if self.point == 1:
+                self.energy_blast_timer.set_duration(65)
+                self.current_angle += 3
                 if self.current_angle > 360:
                     self.current_angle = 0
                 # spiral blast
@@ -146,13 +156,17 @@ class Boss(Entity):
                 blast_target = blast_direction.normalize()*self.max_speed
                 EnergyBlast(self.rect.center, blast_target, False, self.bullets)
 
-            # elif self.point == 0:
-            #     # circular blast extreme
-            #     self.energy_blast_timer.set_duration(300)
-            #     for i in range(0, 181, 36):
-            #         blast_direction = self.direction_from_angle(radians(i))
-            #         blast_target = blast_direction.normalize()*self.max_speed
-            #         EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+            elif self.point == 3:
+                # circular blast extreme
+                self.energy_blast_timer.set_duration(300)
+                for i in range(0, 181, self.blast_p3_points[self.blast_p3]):
+                    blast_direction = self.direction_from_angle(radians(i))
+                    blast_target = blast_direction.normalize()*self.max_speed
+                    EnergyBlast(self.rect.center, blast_target, False, self.bullets)
+
+                self.blast_p3+=1
+                if self.blast_p3 >= len(self.blast_p3_points):
+                    self.blast_p3 = 0
 
             else:
                 self.energy_blast_timer.set_duration(100)
