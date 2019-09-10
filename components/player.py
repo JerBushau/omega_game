@@ -5,9 +5,11 @@ from components.entity import Entity
 from components.chain_lightning import Chain_Lightning
 from components.signaly import signaly
 from components.player_health_bar import PlayerHealthBar
+from components.on_screen_dmg import OnScreenDmg
 from sprite_sheet_loader import sprite_sheet
 from timer import Timer
 from helpers import angle_from_vec
+from random import randint
 
 WIDTH = 1050
 HEIGHT = 600
@@ -22,7 +24,7 @@ class Player(Entity):
     def __init__(self, *groups):
         SHEET = sprite_sheet((100,100), 'assets/ship-death.png')
         super().__init__(pygame.transform.scale(PLAYER, (125, 125)), (200, 800, 120), (WIDTH/2, HEIGHT-50), groups)
-        self.hp = 10
+        self.hp = 6
         self.mask = pygame.mask.from_surface(self.image, 200)
         self.image.fill((5, 5, 5, 10), special_flags=pygame.BLEND_RGB_ADD)
         self.sheet = SHEET
@@ -89,24 +91,32 @@ class Player(Entity):
 
     def handle_regen(self):
         if self.regen_cooldown_timer.is_finished():
-            print('cd reached')
             self.regen_timer.start_repeating()
+            signaly.emit('PLAYER_MSSG', 'REGEN!')
 
         if self.regen_timer.is_finished():
-            print('regen tick')
-            self.hp += 1
+            crit_roll = randint(1, 101)
+            will_crit = crit_roll > 96
+            if will_crit:
+                amt = 0.15*10
+            else:
+                amt = 0.15
+            if self.hp < self.health_bar.starting_hp and not self.dying:
+                self.hp += amt
+                signaly.emit('PLAYER_MSSG', amt)
 
         if self.hp == self.health_bar.starting_hp:
-            self.hp = self.health_bar.starting_hp
+            # self.hp = self.health_bar.starting_hp
             self.regen_timer.reset()
 
     def explode(self):
-        self.destruction_sound.play()
-        self.dying = True
-        self.max_speed = 45
-        self.death_animation_timer.start_repeating()
-        self.weapon.cease_fire()
-        self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (125, 125))
+        if not self.dying:
+            self.destruction_sound.play()
+            self.dying = True
+            self.max_speed = 45
+            self.death_animation_timer.start_repeating()
+            self.weapon.cease_fire()
+            self.image = pygame.transform.scale(self.sheet[self.current_sprite_index], (125, 125))
         
     def sprite_animation(self):
         cap = 11
@@ -145,6 +155,7 @@ class Player(Entity):
 
         if self.post_death_timer.is_finished():
             self.kill()
+            signaly.remove_subscriber('PLAYER_MSSG')
             signaly.emit('GAME_OVER')
 
         if self.direction == 'left':

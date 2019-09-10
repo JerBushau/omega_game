@@ -17,7 +17,7 @@ class PlayerHealthBar(HealthBar):
     def update(self, hp):
         super().update(hp)
 
-        if self.rect.y > HEIGHT-25 and self.current_hp > 0:
+        if self.rect.y > HEIGHT-24 and self.current_hp > 0:
             self.rect.y -= 1
 
         if self.direction == 'down':

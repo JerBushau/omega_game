@@ -14,6 +14,7 @@ class OnScreenDmg(Mssg):
         self.random_x = randint(-55, 55)
 
     def update(self, dt):
+
         if self.pos[1] < self.starting_pos[1] - 20: 
             self.falling = True
 
