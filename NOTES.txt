@@ -44,3 +44,7 @@ Decide whether or not to go side scroller vs static vs top scroller
 Hedgehog phase 2 ideas:
   - Spikes shoot off to reveal robo hedgehog
   - Some kind of diamond weapon comes into play for hedgehog
+  	- It can change colors
+  	- While green all dmg is converted to hp
+  	- While red burst shot that is one hit kill
+  	- While blue 'basic attack'
