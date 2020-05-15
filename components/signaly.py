@@ -9,6 +9,7 @@ class Signaly:
             event = self.events[event_type]
         except KeyError:
             print('Invalid event type.')
+            return
 
         if payload:
             event['callback'](payload)
@@ -28,7 +29,6 @@ class Signaly:
 
     def remove_subscriber(self, event_type):
         del self.events[event_type]
-
 
 
 signaly = Signaly()
